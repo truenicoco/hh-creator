@@ -1,27 +1,23 @@
 os: windows
 language: shell
-
 env:
   global:
-    - PYPATH=/c/Python:/c/Python/Scripts
-    - PATH=$PYPATH:$PATH
-
+  - PYPATH=/c/Python:/c/Python/Scripts
+  - PATH=$PYPATH:$PATH
 before_install:
-  - choco install python3 --params "/InstallDir:C:\python"
-  - python -m pip install --upgrade pip
-  - pip install pyinstaller
-
+- choco install python3 --params "/InstallDir:C:\python"
+- python -m pip install --upgrade pip
+- pip install pyinstaller
 script:
-  - pip install ./
-  - cd pyinstaller-win
-  - pyinstaller hh-creator.spec  --noconfirm
-  - cd dist
-  - 7z a hh-creator.zip hh-creator
-
+- pip install ./
+- cd pyinstaller-win
+- pyinstaller hh-creator.spec  --noconfirm
+- cd dist
+- 7z a hh-creator.zip hh-creator
 deploy:
   provider: releases
   api_key:
-    secure: ATi6dqpNd01sTWBx4k+ZfVMTV7MA06D36G59SNWehh+px2YRSWilqojC+7smz0OzX4bVKATqDhWzmbwu1rFHEJCONI1z2NmGH0OY3nmMT33V2TvfwIB5SBrEH3kOPqh9ufbTJ3Z2u0hiBLV/JLjfWXtsP4kDemaGc4mK0wkl9EGZ+2xq2OvQIgRFrMsfeQbuFc1eaFUZiAN+QXmj8COtMfbychCYt0MqhqrIR7gc2tGvfZXTE89Z17IjAZLun5IeyrzPIGwBzidSLPcANDpFLUzWfpL9jaUamXTOEplSYMvrAj8Fsi/vKOPKhnRRCAGwIUosG9qmCwc0flXaJdJp5DC1t24rnrNTqzEbTW2Iv2qs9P4WP9ayZMid9/0MHZsLvZNaX5ujiN/m5XUVj6q0ZqGTxeIcaH386OTAbQkdsAIx1HUjpGP0MavT/YCNi7LvOGi3e3HX4o8mV3zv2O8nsXWgCFKlCeWYCYp67XoL2W6D5nI16gM6PHBlxhtbDOYc2kwEU7Y11HtXL82db5AKTbcpz3KsKnBw/+pzcSR3cGXrPlLeDdor7I3xq6l1vIphWSjZLRF26th93zOX1TjMjet5Ms4e/AVA3L/fnld5DZ7iexPlUht5B0qsSgajxDFYPL1sAn7VXjlqWRZs6CbsyKcyV3MZeAgARkHYi92cr7Q=
+    secure: CLwOuaKYfjWLZBRaP5bptBfmZwLygpDW5SM1Z63vNvQL0GLuRIO/lQTXrRlhLUTQin3gdQ6JX0DM+DYPnu0lF+lAe1tQbLfBv0X10MWAuFw/3IVwg8Afl6uDcq7vivQZbTPz9pFpbM5yF+HGg5AS4gU7mQAMrxSb7T1wcvPZVDxpi+o59wrsp9eXvMOGBkZ0sQIzns/Le/M237sVSMopFpt0w4AmkNNFnv4V2+T8DFpqJWV8yPt4faHG4kt4jHBHbREhbL8EfEmXSUtdtffJ1H8HZSOsSxPopi04trkEMi4n/zC+TE8aJKt0ibueEE0sHnGs4rEmEYNVeW9aYmh+RqBhSFI8ZW/tPd1j66eTHLeKPVxjR1zaOx0mEmSTX9leP3dhoKFWrH9M7BIjFzGY5oxxqcJYf4D36lpoJGqE+WMs3zkRKHmPSUPw0cGfRTWzeii2Mt6u9uuYASsqCdL4loP81U4uh+fSD6ily9zO1tL51NemsL4gBbmoN5TNEhcIeiwT4ntQxCXxmdhh/gU8RFiplS6vu2QvI051Y4VNtKerxLHZHLNkuDreC4cP+El4f8Ixc5xentFH5HyW9xQjhr4/TdPk+XzqIaW4wSkemZR6bJ7GtFJskU9VP8ibmceyQVQKUVZfZX5Ignlh1VyuF33hmKHYHqaZLOJXGDAL+/Q=
   file: hh-creator.zip
   on:
     repo: truenicoco/hh-creator
