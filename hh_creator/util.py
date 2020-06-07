@@ -161,6 +161,7 @@ try:
     }
 except KeyError as e:
     log.warning(f"Sounds were not found: {e}")
+    sounds = {}
 
 
 amount_validator = AmountValidatorWithBounds(0)
