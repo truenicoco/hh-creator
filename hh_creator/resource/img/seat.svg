@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   height="97.953003"
+   width="249.946"
+   version="1.1"
+   viewBox="0 0 249.946 97.953003"
+   data-name="6 JOUEURS"
+   id="_6_JOUEURS">
+  <metadata
+     id="metadata36">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs17">
+    <linearGradient
+       gradientTransform="translate(-835.027,-875.04294)"
+       gradientUnits="userSpaceOnUse"
+       y2="928.80103"
+       x2="1069.896"
+       y1="928.80103"
+       x1="850.104"
+       id="gradient">
+      <stop
+         id="stop2"
+         stop-opacity="0"
+         stop-color="#1d1d1b"
+         offset="0" />
+      <stop
+         id="stop4"
+         stop-opacity="0.162"
+         stop-color="#1a1a19"
+         offset="0.028" />
+      <stop
+         id="stop6"
+         stop-opacity="0.806"
+         stop-color="#0d0e10"
+         offset="0.205" />
+      <stop
+         id="stop8"
+         stop-color="#090a0d"
+         offset="0.5" />
+      <stop
+         id="stop10"
+         stop-opacity="0.806"
+         stop-color="#0d0e10"
+         offset="0.795" />
+      <stop
+         id="stop12"
+         stop-opacity="0.162"
+         stop-color="#1a1a19"
+         offset="0.972" />
+      <stop
+         id="stop14"
+         stop-opacity="0"
+         stop-color="#1d1d1b"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <polygon
+     transform="translate(-835.027,-875.045)"
+     id="polygon19"
+     fill="#ffffff"
+     points="1395.274,857.821 1409.616,857.355 1440.594,857.363 1497.96,857.363 1555.327,857.363 1586.305,857.363 1600.646,857.831 1607.817,858.066 1614.988,858.343 1607.817,858.62 1600.646,858.855 1586.305,859.323 1555.327,859.323 1497.96,859.323 1440.594,859.323 1409.616,859.33 1395.274,858.865 1388.104,858.629 1380.933,858.343 1388.104,858.057 " />
+  <polygon
+     transform="translate(-835.027,-875.045)"
+     id="polygon21"
+     fill="#ffffff"
+     points="319.899,857.821 334.241,857.355 365.219,857.363 422.585,857.363 479.952,857.363 510.93,857.363 525.271,857.831 532.442,858.066 539.613,858.343 532.442,858.62 525.271,858.855 510.93,859.323 479.952,859.323 422.585,859.323 365.219,859.323 334.241,859.33 319.899,858.865 312.728,858.629 305.558,858.343 312.728,858.057 " />
+  <rect
+     style="fill:url(#gradient);stroke-width:1"
+     id="rect23"
+     fill="url(#gradient)"
+     opacity="0.7"
+     height="86.417999"
+     width="219.79201"
+     y="10.54698"
+     x="15.077003" />
+  <image
+     y="0"
+     x="2.451"
+     id="image25"
+     xlink:href="data:image/png;base64,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"
+     height="17.155001"
+     width="245.532" />
+  <polygon
+     transform="translate(-835.027,-875.045)"
+     id="polygon27"
+     fill="#ffffff"
+     points="850.342,885.049 865.658,884.583 898.739,884.591 960,884.591 1021.261,884.591 1054.342,884.591 1069.658,885.059 1077.315,885.294 1084.973,885.571 1077.315,885.848 1069.658,886.083 1054.342,886.551 1021.261,886.551 960,886.551 898.739,886.551 865.658,886.559 850.342,886.093 842.685,885.857 835.027,885.571 842.685,885.285 " />
+  <polygon
+     transform="translate(-835.027,-875.045)"
+     id="polygon29"
+     fill="#ffffff"
+     points="857.314,971.488 871.656,971.022 902.634,971.03 960,971.03 1017.366,971.03 1048.344,971.03 1062.686,971.498 1069.857,971.733 1077.028,972.01 1069.857,972.287 1062.686,972.522 1048.344,972.99 1017.366,972.99 960,972.99 902.634,972.99 871.656,972.998 857.314,972.532 850.143,972.296 842.972,972.01 850.143,971.724 " />
+  <polygon
+     transform="translate(-835.027,-875.045)"
+     id="polygon31"
+     fill="#ffffff"
+     points="857.314,885.049 871.656,884.583 902.634,884.591 960,884.591 1017.366,884.591 1048.344,884.591 1062.686,885.059 1069.857,885.294 1077.028,885.571 1069.857,885.848 1062.686,886.083 1048.344,886.551 1017.366,886.551 960,886.551 902.634,886.551 871.656,886.559 857.314,886.093 850.143,885.857 842.972,885.571 850.143,885.285 " />
+</svg>

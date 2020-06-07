@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>757</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1280</width>
+    <height>720</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Éditeur de HH</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="renderHints">
+       <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::LosslessImageRendering|QPainter::NonCosmeticDefaultPen|QPainter::Qt4CompatiblePainting|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+      </property>
+      <property name="cacheMode">
+       <set>QGraphicsView::CacheBackground</set>
+      </property>
+      <property name="optimizationFlags">
+       <set>QGraphicsView::DontAdjustForAntialiasing|QGraphicsView::DontClipPainter|QGraphicsView::DontSavePainterState</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButtonStart">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Début</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonBack">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Retour</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonNext">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Suite</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxEditMode">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Mode édition</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1280</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMain">
+    <property name="title">
+     <string>&amp;Fichier</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuParam">
+    <property name="title">
+     <string>&amp;Configuration</string>
+    </property>
+    <widget class="QMenu" name="menuTable">
+     <property name="title">
+      <string>Couleur de la table</string>
+     </property>
+     <addaction name="actionTableGreen"/>
+     <addaction name="actionTableBlue"/>
+    </widget>
+    <widget class="QMenu" name="menuCardsBack">
+     <property name="title">
+      <string>Dos des cartes</string>
+     </property>
+     <addaction name="actionBackRed"/>
+     <addaction name="actionBackBlue"/>
+    </widget>
+    <widget class="QMenu" name="menuWebcam">
+     <property name="title">
+      <string>Webcam</string>
+     </property>
+     <addaction name="actionLeft"/>
+     <addaction name="actionRight"/>
+     <addaction name="actionBoth"/>
+     <addaction name="actionSans"/>
+    </widget>
+    <addaction name="actionFullScreen"/>
+    <addaction name="separator"/>
+    <addaction name="actionChooseHero"/>
+    <addaction name="actionHideHandsBeforeShowdown"/>
+    <addaction name="separator"/>
+    <addaction name="menuTable"/>
+    <addaction name="menuWebcam"/>
+    <addaction name="menuCardsBack"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenGL"/>
+    <addaction name="separator"/>
+    <addaction name="actionRestoreConfig"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>&amp;?</string>
+    </property>
+    <addaction name="actionCredits"/>
+   </widget>
+   <addaction name="menuMain"/>
+   <addaction name="menuParam"/>
+   <addaction name="menu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Enregistrer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Enregistrer sous...</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quitter</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Ouvrir...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>Nouveau...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionFullScreen">
+   <property name="text">
+    <string>Plein écran</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
+  </action>
+  <action name="actionTableGreen">
+   <property name="text">
+    <string>Vert</string>
+   </property>
+  </action>
+  <action name="actionTableBlue">
+   <property name="text">
+    <string>Bleu</string>
+   </property>
+  </action>
+  <action name="actionBackRed">
+   <property name="text">
+    <string>Rouge</string>
+   </property>
+  </action>
+  <action name="actionBackBlue">
+   <property name="text">
+    <string>Bleu</string>
+   </property>
+  </action>
+  <action name="actionCredits">
+   <property name="text">
+    <string>Licence</string>
+   </property>
+  </action>
+  <action name="actionHideHandsBeforeShowdown">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cacher mains avant showdown</string>
+   </property>
+  </action>
+  <action name="actionLeft">
+   <property name="text">
+    <string>Gauche</string>
+   </property>
+  </action>
+  <action name="actionRight">
+   <property name="text">
+    <string>Droite</string>
+   </property>
+  </action>
+  <action name="actionBoth">
+   <property name="text">
+    <string>Les deux</string>
+   </property>
+  </action>
+  <action name="actionSans">
+   <property name="text">
+    <string>Sans</string>
+   </property>
+  </action>
+  <action name="actionChooseHero">
+   <property name="text">
+    <string>Choisir Hero...</string>
+   </property>
+  </action>
+  <action name="actionRestoreConfig">
+   <property name="text">
+    <string>Restaurer la configuration par défaut</string>
+   </property>
+  </action>
+  <action name="actionOpenGL">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Utiliser OpenGL</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
