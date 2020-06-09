@@ -373,10 +373,10 @@ class TableScene(QtWidgets.QGraphicsScene):
         self.button_item.setPos(*pos)
         self.parent().update_buttons()
 
-    def bets_to_pot_animations(self, hand_history):
+    def bets_to_pot_animations(self, hand_history, add_last_call=True):
         log.info("Animating bets to pot")
         last_action = hand_history.last_action
-        if last_action.action_type == hh.ActionType.CALL:
+        if add_last_call and last_action.action_type == hh.ActionType.CALL:
             p = self._get_player_item_from_hh_position(last_action.player.position)
             p.animate_stack_to_bet(last_action.amount, 0, target=self.central_pot_item)
             p.bet_item.content = last_action.amount
@@ -501,6 +501,15 @@ class TableScene(QtWidgets.QGraphicsScene):
         self._clear_text()
         Animations.start()
 
+    def update_total_pot(self, hand_history):
+        central_pot = hand_history.central_pot
+        total_pot = hand_history.total_pot
+
+        if central_pot != total_pot:
+            self.total_pot_item.content = total_pot
+        else:
+            self.total_pot_item.content = 0
+
     def sync_with_hh(self, hand_history, rebuild_pots=False):
         log.debug("Syncing table with HH")
 
@@ -509,13 +518,16 @@ class TableScene(QtWidgets.QGraphicsScene):
         if self.parent().hide_cards_before_showdown():
             self.hide_hands()
 
+        self.update_total_pot(hand_history)
+
         central_pot = hand_history.central_pot
         total_pot = hand_history.total_pot
 
-        if central_pot != total_pot:
-            self.total_pot_item.content = total_pot
-        else:
-            self.total_pot_item.content = 0
+
+        # if central_pot != total_pot:
+        #     self.total_pot_item.content = total_pot
+        # else:
+        #     self.total_pot_item.content = 0
 
         if hand_history.current_player is not None:
             to_call = hand_history.current_player_amount_to_call()

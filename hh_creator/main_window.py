@@ -12,6 +12,7 @@ from .hh import HandHistory, HHJSONEncoder, json_hook
 from .scene import TableScene
 from .util import AutoUI, IncrementableEnum
 from .dialog import NewHandDialog
+from .animations import Animations
 from . import config
 
 
@@ -176,9 +177,32 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         elif self.state == self.State.REPLAY:
             self.replay_action_cursor += 1
             if self.replay_action_cursor > len(self.hand_history.editable_actions()):
-                self.scene.update_winners(self.hand_history)
+                if (
+                    self.replay_action_cursor
+                    == len(self.hand_history.editable_actions()) + 1
+                ):
+                    Animations.reset()
+                    self.scene.bets_to_pot_animations(
+                        self.hand_history, add_last_call=False
+                    )
+                    self.scene.clear_bet_items()
+                    self.scene.update_total_pot(self.hand_history)
+                    Animations.start()
+                play_len = self.hand_history.play_length()
+                if self.replay_action_cursor == play_len - 4:
+                    self.scene.show_flop()
+                elif self.replay_action_cursor == play_len - 3:
+                    self.scene.show_turn()
+                elif self.replay_action_cursor == play_len - 2:
+                    self.scene.show_river()
+                elif self.replay_action_cursor == play_len - 1:
+                    self.scene.show_known_hands()
+                else:
+                    self.scene.update_winners(self.hand_history)
             else:
                 hand_history = self.hand_history.at_action(self.replay_action_cursor)
+                if hand_history.last_action is not None:
+                    hand_history.current_street = hand_history.last_action.street
                 self.scene.sync_with_hh(hand_history)
         self.update_buttons()
 
@@ -189,12 +213,27 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.scene.request_action(self.hand_history)
         elif self.state == self.State.REPLAY:
             self.replay_action_cursor -= 1
-            hand_history = self.hand_history.at_action(self.replay_action_cursor)
-            self.scene.sync_with_hh(
-                hand_history,
-                rebuild_pots=self.replay_action_cursor
-                == len(self.hand_history.editable_actions()),
-            )
+            if self.replay_action_cursor > len(self.hand_history.editable_actions()):
+                play_len = self.hand_history.play_length()
+                if self.replay_action_cursor == play_len - 4:
+                    self.scene.hide_board()
+                elif self.replay_action_cursor == play_len - 3:
+                    self.scene.show_flop()
+                elif self.replay_action_cursor == play_len - 2:
+                    self.scene.show_turn()
+                elif self.replay_action_cursor == play_len - 1:
+                    self.scene.hide_hands()
+                    self.scene.sync_with_hh(self.hand_history, rebuild_pots=True)
+            else:
+                hand_history = self.hand_history.at_action(self.replay_action_cursor)
+                if hand_history.last_action is not None:
+                    hand_history.current_street = hand_history.last_action.street
+                self.scene.sync_with_hh(
+                    hand_history,
+                    rebuild_pots=self.replay_action_cursor
+                    == len(self.hand_history.editable_actions()),
+                )
+
         self.update_buttons()
 
     @pyqtSlot()
@@ -396,7 +435,12 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             full.setEnabled(True)
             cur = self.replay_action_cursor
 
-            play_len = len(self.hand_history.editable_actions()) + 1
+            play_len = self.hand_history.play_length()
+            #     (
+            #     len(self.hand_history.editable_actions())
+            #     + 1  # Before posting blinds and ante
+            #     + self.hand_history.n_pseudo_actions()
+            # )
 
             back.setText("Retour")
             next_.setText("Suite")

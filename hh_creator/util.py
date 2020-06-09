@@ -43,6 +43,9 @@ class IncrementableEnum(Enum):
     def __gt__(self, other):
         return self._value_ > other._value_
 
+    def __sub__(self, other):
+        return self._value_ - other._value_
+
 
 class Image:
     IMG_PATH = RESOURCE_PATH / "img"
