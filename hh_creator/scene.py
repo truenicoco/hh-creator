@@ -510,7 +510,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         else:
             self.total_pot_item.content = 0
 
-    def sync_with_hh(self, hand_history, rebuild_pots=False):
+    def sync_with_hh(self, hand_history, rebuild_pots=False, update_board=True):
         log.debug("Syncing table with HH")
 
         Animations.reset()
@@ -522,12 +522,6 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         central_pot = hand_history.central_pot
         total_pot = hand_history.total_pot
-
-
-        # if central_pot != total_pot:
-        #     self.total_pot_item.content = total_pot
-        # else:
-        #     self.total_pot_item.content = 0
 
         if hand_history.current_player is not None:
             to_call = hand_history.current_player_amount_to_call()
@@ -597,10 +591,6 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         last_action = hand_history.last_action
 
-        # if last_action is None:
-        #     self.hide_board()
-        #     return
-
         try:
             sounds[last_action.action_type].play()
         except KeyError:
@@ -608,14 +598,15 @@ class TableScene(QtWidgets.QGraphicsScene):
         except AttributeError:
             log.debug("No action, no sound")
 
-        if hand_history.current_street in (hh.Street.SHOWDOWN, hh.Street.RIVER):
-            self.show_river()
-        elif hand_history.current_street == hh.Street.FLOP:
-            self.show_flop()
-        elif hand_history.current_street == hh.Street.TURN:
-            self.show_turn()
-        elif hand_history.current_street == hh.Street.PRE_FLOP:
-            self.hide_board()
+        if update_board:
+            if hand_history.current_street in (hh.Street.SHOWDOWN, hh.Street.RIVER):
+                self.show_river()
+            elif hand_history.current_street == hh.Street.FLOP:
+                self.show_flop()
+            elif hand_history.current_street == hh.Street.TURN:
+                self.show_turn()
+            elif hand_history.current_street == hh.Street.PRE_FLOP:
+                self.hide_board()
 
         Animations.start()
 

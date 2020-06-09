@@ -201,9 +201,14 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     self.scene.update_winners(self.hand_history)
             else:
                 hand_history = self.hand_history.at_action(self.replay_action_cursor)
-                if hand_history.last_action is not None:
-                    hand_history.current_street = hand_history.last_action.street
-                self.scene.sync_with_hh(hand_history)
+                pseudo_actions_remaining = self.replay_action_cursor != len(
+                    self.hand_history.editable_actions()
+                )
+                # if hand_history.last_action is not None:
+                #     hand_history.current_street = hand_history.last_action.street
+                self.scene.sync_with_hh(
+                    hand_history, update_board=pseudo_actions_remaining
+                )
         self.update_buttons()
 
     @pyqtSlot()
@@ -226,12 +231,13 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     self.scene.sync_with_hh(self.hand_history, rebuild_pots=True)
             else:
                 hand_history = self.hand_history.at_action(self.replay_action_cursor)
-                if hand_history.last_action is not None:
-                    hand_history.current_street = hand_history.last_action.street
+                pseudo_actions_remaining = self.replay_action_cursor != len(
+                    self.hand_history.editable_actions()
+                )
                 self.scene.sync_with_hh(
                     hand_history,
-                    rebuild_pots=self.replay_action_cursor
-                    == len(self.hand_history.editable_actions()),
+                    rebuild_pots=pseudo_actions_remaining,
+                    update_board=pseudo_actions_remaining,
                 )
 
         self.update_buttons()
@@ -436,11 +442,6 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             cur = self.replay_action_cursor
 
             play_len = self.hand_history.play_length()
-            #     (
-            #     len(self.hand_history.editable_actions())
-            #     + 1  # Before posting blinds and ante
-            #     + self.hand_history.n_pseudo_actions()
-            # )
 
             back.setText("Retour")
             next_.setText("Suite")
