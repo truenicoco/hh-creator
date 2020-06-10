@@ -127,7 +127,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         if code:
             sb = dialog.get_field_value("SB")
             ante = dialog.get_field_value("Ante")
-            n_digits = max(-sb.as_tuple().exponent, -ante.as_tuple().exponent, 1)
+            n_digits = dialog.get_field_value("Decimals")
 
             log.debug(f"Will use {n_digits} digits for display rounding")
             TextItem.n_decimals = n_digits
@@ -204,8 +204,6 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                 pseudo_actions_remaining = self.replay_action_cursor != len(
                     self.hand_history.editable_actions()
                 )
-                # if hand_history.last_action is not None:
-                #     hand_history.current_street = hand_history.last_action.street
                 self.scene.sync_with_hh(
                     hand_history, update_board=pseudo_actions_remaining
                 )
@@ -380,6 +378,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
     def save_hh(self, filename):
         hh_dict = self.hand_history.to_dict()
+        hh_dict["n_decimals"] = TextItem.n_decimals
         hh_dict["player_names"] = [
             p.name_item.content for p in self.scene.get_active_players_after_button()
         ]
@@ -406,9 +405,12 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.hand_history = HandHistory.from_dict(hh_dict)
         self.scene.load_dict(hh_dict, self.hand_history)
         self.widgets["checkBoxEditMode"].setChecked(False)
+        # Compat with previous HH format that didn't include n_decimals
         sb = self.hand_history.small_blind
         ante = self.hand_history.ante
-        n_digits = max(-sb.as_tuple().exponent, -ante.as_tuple().exponent, 1)
+        n_digits = hh_dict.get(
+            "n_decimals", max(-sb.as_tuple().exponent, -ante.as_tuple().exponent, 1)
+        )
         TextItem.n_decimals = n_digits
         self.pushButtonStart.clicked.emit()
 
