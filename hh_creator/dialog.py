@@ -28,6 +28,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         "Currency": Field(str, True),
         "Variant": Field(str, False, "comboBox", "CurrentText"),
         "CurrencyPosition": Field(str, False, "comboBox", "CurrentText"),
+        "Decimals": Field(int, True),
     }
 
     N_CARDS = {"Texas": 2, "Omaha": 4}
@@ -51,6 +52,13 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         self.open_instead = False
         self.update_ok()
 
+    def _auto_decimals(self):
+        sb = self.get_field_value("SB", Decimal())
+        ante = self.get_field_value("Ante", Decimal())
+        self._get_widget("Decimals").setText(
+            str(max(-sb.as_tuple().exponent, -ante.as_tuple().exponent, 1))
+        )
+
     def _auto_sb(self):
         self._get_widget("SB").setText(str(self.get_field_value("BB") / 2))
 
@@ -70,7 +78,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
             text = widget.currentText()
 
         if (
-            field_name != "SB"
+            field_name not in ("SB", "Decimals")
             and field.checkable
             and not self._get_checkbox(field_name).isChecked()
         ):
@@ -87,6 +95,8 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
     @pyqtSlot(str)
     def on_lineEditSB_textEdited(self, value):
+        if not self.widgets["checkBoxDecimals"].isChecked():
+            self._auto_decimals()
         self.update_ok()
 
     @pyqtSlot(bool)
@@ -95,10 +105,18 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
             self._auto_sb()
         self.update_ok()
 
+    @pyqtSlot(bool)
+    def on_checkBoxDecimals_toggled(self, checked):
+        if not checked:
+            self._auto_decimals()
+        self.update_ok()
+
     @pyqtSlot(str)
     def on_lineEditBB_textEdited(self, value):
         if not self.widgets["checkBoxSB"].isChecked():
             self._auto_sb()
+        if not self.widgets["checkBoxDecimals"].isChecked():
+            self._auto_decimals()
         self.update_ok()
 
     @pyqtSlot(str)
@@ -113,6 +131,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
     @pyqtSlot(str)
     def on_lineEditAnte_textEdited(self, value):
+        self._auto_decimals()
         self.update_ok()
 
     @pyqtSlot(bool)
@@ -136,6 +155,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         straddle = self.get_field_value("Straddle", default=0)
         ante = self.get_field_value("Ante", default=0)
         players = self.get_field_value("Players", default=0)
+        decimals = self.get_field_value("Decimals", default=0)
 
         sb_ok = 0 <= sb <= bb
         bb_ok = 0 < bb
@@ -145,8 +165,11 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         )
         ante_ok = not self._get_checkbox("Ante").isChecked() or 0 < ante
         players_ok = 2 <= players <= 10
+        decimals_ok = decimals >= 0
 
-        self.ok_button.setEnabled(all((sb_ok, bb_ok, straddle_ok, ante_ok, players_ok)))
+        self.ok_button.setEnabled(
+            all((sb_ok, bb_ok, straddle_ok, ante_ok, players_ok, decimals_ok))
+        )
 
 
 class NameDialog(QtWidgets.QDialog, AutoUI):
