@@ -3,14 +3,14 @@ import json
 from typing import Union
 from pathlib import Path
 
-from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSlot
 
 from .card import CardLook
 from .text import TextItem
 from .hh import HandHistory, HHJSONEncoder, json_hook
 from .scene import TableScene
-from .util import AutoUI, IncrementableEnum
+from .util import AutoUI, IncrementableEnum, sounds
 from .dialog import NewHandDialog
 from .animations import Animations
 from . import config
@@ -190,11 +190,14 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     Animations.start()
                 play_len = self.hand_history.play_length()
                 if self.replay_action_cursor == play_len - 4:
+                    sounds["street"].play()
                     self.scene.show_flop()
                 elif self.replay_action_cursor == play_len - 3:
                     self.scene.show_turn()
+                    sounds["street"].play()
                 elif self.replay_action_cursor == play_len - 2:
                     self.scene.show_river()
+                    sounds["street"].play()
                 elif self.replay_action_cursor == play_len - 1:
                     self.scene.show_known_hands()
                 else:

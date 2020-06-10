@@ -1,6 +1,7 @@
 tests
 old
 pyinstaller-win/*.bat
+pyinstaller-win/*.log
 pyinstaller-win/build
 pyinstaller-win/dist
 **/__pycache__

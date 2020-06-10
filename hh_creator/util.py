@@ -152,20 +152,18 @@ _sounds = {
     for f in (RESOURCE_PATH / "sounds").glob("*.wav")
 }
 
-try:
-    sounds = {
-        ActionType.BET: _sounds["bet"],
-        ActionType.RAISE: _sounds["bet"],
-        ActionType.CHECK: _sounds["check"],
-        ActionType.CALL: _sounds["call"],
-        ActionType.FOLD: _sounds["fold"],
-        ActionType.BB: _sounds["bet"],
-        ActionType.ANTE: _sounds["bet"],
-        ActionType.STRADDLE: _sounds["bet"],
-    }
-except KeyError as e:
-    log.warning(f"Sounds were not found: {e}")
-    sounds = {}
+sounds = {
+    ActionType.BET: _sounds["bet"],
+    ActionType.RAISE: _sounds["bet"],
+    ActionType.CHECK: _sounds["check"],
+    ActionType.CALL: _sounds["call"],
+    ActionType.FOLD: _sounds["fold"],
+    ActionType.BB: _sounds["bet"],
+    ActionType.ANTE: _sounds["bet"],
+    ActionType.STRADDLE: _sounds["bet"],
+    "street": _sounds["street"],
+    "call_closing": _sounds["call_closing"],
+}
 
 
 amount_validator = AmountValidatorWithBounds(0)

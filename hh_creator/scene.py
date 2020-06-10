@@ -546,12 +546,10 @@ class TableScene(QtWidgets.QGraphicsScene):
         else:
             self.pot_odds.content = 0
 
+        next_street = self.board_street < hand_history.current_street
         if self.board_street == hh.Street.ANTE and hand_history.ante:
             self.ante_animations(hand_history, central_pot)
-        elif (
-            self.board_street < hand_history.current_street
-            and self.board_street != hh.Street.ANTE
-        ):
+        elif next_street and self.board_street != hh.Street.ANTE:
             self.bets_to_pot_animations(hand_history)
 
         for p in self.active_players():
@@ -570,7 +568,8 @@ class TableScene(QtWidgets.QGraphicsScene):
             for p in self.active_players():
                 p.setGraphicsEffect(None)
 
-        if self.board_street > hand_history.current_street or rebuild_pots:
+        street_back = self.board_street > hand_history.current_street
+        if street_back or rebuild_pots:
             if hand_history.current_street == hh.Street.PRE_FLOP:
                 for side_pot_item in [self.central_pot_item] + self.side_pot_items:
                     side_pot_item.content = 0
@@ -592,7 +591,12 @@ class TableScene(QtWidgets.QGraphicsScene):
         last_action = hand_history.last_action
 
         try:
-            sounds[last_action.action_type].play()
+            if next_street:
+                if last_action.action_type == hh.ActionType.CALL:
+                    sounds["call_closing"].play()
+                sounds["street"].play()
+            else:
+                sounds[last_action.action_type].play()
         except KeyError:
             log.debug(f"No sound for action {last_action.action_type}")
         except AttributeError:
