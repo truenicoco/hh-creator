@@ -46,6 +46,7 @@ class TableScene(QtWidgets.QGraphicsScene):
             prefix=config.config["text"].get("total_pot_prefix") + " ",
             content_is_number=True,
             hide_if_empty=True,
+            point_size=config.config["text"].getint("total_pot_font_size"),
         )
         self.pot_odds = TextItem(
             prefix=config.config["text"].get("odds_prefix") + " ",
