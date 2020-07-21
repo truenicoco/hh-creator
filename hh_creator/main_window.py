@@ -62,6 +62,8 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         else:
             self.replay_action_cursor = 0
 
+        self.actionOpenGL.setChecked(config.config["animation"].getboolean("opengl"))
+
         self._make_table_scene()
         self.show()
         if config.geometry is not None:
@@ -359,6 +361,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.graphics_view.setViewport(QtWidgets.QOpenGLWidget())
         else:
             self.graphics_view.setViewport(QtWidgets.QWidget())
+        config.config["animation"]["opengl"] = str(checked)
 
     @pyqtSlot()
     def on_actionRestoreConfig_triggered(self):
