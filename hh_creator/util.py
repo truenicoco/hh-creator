@@ -1,6 +1,6 @@
 from decimal import Decimal, InvalidOperation
 import logging
-import locale
+# import locale
 
 from PyQt5 import QtCore, QtGui, uic, QtWidgets, Qt, QtMultimedia
 
@@ -139,9 +139,10 @@ def get_center(item, scene=False):
 
 def amount_format(x, n_decimals):
     if float(x).is_integer():
-        return locale.format_string("%d", x)
+        return f"{x:n}"
     else:
-        return locale.format_string(f"%.{n_decimals}f", x)
+        x = round(x, n_decimals)
+        return f"{x:n}"
 
 
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]
