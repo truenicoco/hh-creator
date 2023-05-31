@@ -181,6 +181,7 @@ class HandHistory:
         small_blind: Decimal = Decimal("0.5"),
         ante: Decimal = Decimal("0."),
         big_blind: Union[Decimal, None] = None,
+        bb_ante: Union[Decimal, None] = None,
         n_straddle: int = 0,
     ):
         self.small_blind = small_blind
@@ -189,6 +190,7 @@ class HandHistory:
         self.big_blind = big_blind
         self.actions: List[Action] = []
         self.ante = ante
+        self.bb_ante = bb_ante
 
         self.players = []
 
@@ -217,6 +219,11 @@ class HandHistory:
         if self.ante:
             for _ in range(len(self.players)):
                 self.add_action(ActionType.ANTE, self.ante)
+        if self.bb_ante:
+            self.add_action(ActionType.ANTE, Decimal(0))
+            self.add_action(ActionType.ANTE, self.bb_ante)
+            for _ in range(len(self.players) - 2):
+                self.add_action(ActionType.ANTE, Decimal(0))
 
         self.current_street = Street.PRE_FLOP
         self.add_action(ActionType.SB, min(self.small_blind, self.current_player.stack))
@@ -472,6 +479,9 @@ class HandHistory:
             min_ = min([p.investment for p in side_players])
             pot = Decimal(0)
             for p in side_players:
+                if p.position == Position.BB and self.bb_ante:
+                    p.investment -= self.bb_ante
+                    pot += self.bb_ante
                 p.investment -= min_
                 pot += min_
             dead_amounts = []
@@ -499,7 +509,7 @@ class HandHistory:
     @classmethod
     def from_dict(cls, obj):
         hh = cls()
-        for k in "ante", "big_blind", "small_blind", "n_straddle":
+        for k in "ante", "big_blind", "small_blind", "n_straddle", "bb_ante":
             setattr(hh, k, obj[k])
         hh.set_stacks(obj["players"])
         hh.post_blinds_and_antes()
@@ -529,6 +539,7 @@ class HandHistory:
 
     def play_length(self):
         return 2 + len(self.editable_actions()) + self.n_pseudo_actions()
+
 
 @dataclass
 class SidePotPlayer:

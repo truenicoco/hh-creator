@@ -96,6 +96,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             small_blind=self.hh_settings["sb"],
             ante=self.hh_settings["ante"],
             big_blind=self.hh_settings["bb"],
+            bb_ante=self.hh_settings["bb_ante"],
             stacks=stacks,
         )
 
@@ -144,6 +145,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                 small_blind=dialog.get_field_value("SB"),
                 big_blind=dialog.get_field_value("BB"),
                 ante=dialog.get_field_value("Ante"),
+                bb_ante=dialog.get_field_value("BBAnte"),
                 n_straddle=dialog.get_field_value("Straddle"),
             )
 

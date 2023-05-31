@@ -23,6 +23,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         "BB": Field(Decimal, False),
         "Straddle": Field(int, True),
         "Ante": Field(Decimal, True),
+        "BBAnte": Field(Decimal, True),
         "Players": Field(int, False),
         "Currency": Field(str, True),
         "Variant": Field(str, False, "comboBox", "CurrentText"),
@@ -137,6 +138,12 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
     def on_checkBoxAnte_toggled(self, checked):
         if not checked:
             self._get_widget("Ante").setText("0")
+        self.update_ok()
+
+    @pyqtSlot(bool)
+    def on_checkBoxBBAnte_toggled(self, checked):
+        if not checked:
+            self._get_widget("BBAnte").setText("0")
         self.update_ok()
 
     @pyqtSlot(str)
