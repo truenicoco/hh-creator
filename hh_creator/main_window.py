@@ -10,7 +10,7 @@ from . import config
 from .animations import Animations
 from .card import CardLook
 from .dialog import NewHandDialog
-from .hh import HandHistory, HHJSONEncoder, json_hook
+from .hh import HandHistory, HHJSONEncoder, Street, json_hook
 from .scene import TableScene
 from .text import TextItem
 from .util import AutoUI, IncrementableEnum, sounds
@@ -37,6 +37,9 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         INIT = 1
         ACTIONS = 2
         REPLAY = 3
+        WAIT_FOR_FLOP = 10
+        WAIT_FOR_TURN = 11
+        WAIT_FOR_RIVER = 12
 
     STATUS_MESSAGES = {
         State.LAUNCH: "",
@@ -45,6 +48,9 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         "clic molette: (dés)activer un joueur",
         State.ACTIONS: "Clic gauche sur un nom pour le modifier",
         State.REPLAY: "Mode replay",
+        State.WAIT_FOR_FLOP: "Suivant = afficher flop",
+        State.WAIT_FOR_TURN: "Suivant = afficher turn",
+        State.WAIT_FOR_RIVER: "Suivant = afficher river",
     }
 
     def __init__(self):
@@ -206,12 +212,29 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     self.scene.update_winners(self.hand_history)
             else:
                 hand_history = self.hand_history.at_action(self.replay_action_cursor)
-                pseudo_actions_remaining = self.replay_action_cursor != len(
-                    self.hand_history.editable_actions()
-                )
-                self.scene.sync_with_hh(
-                    hand_history, update_board=pseudo_actions_remaining
-                )
+                self.scene.sync_with_hh(hand_history, update_board=False)
+                cur_street = hand_history.current_street
+                prev_street = hand_history.at_action(
+                    self.replay_action_cursor - 1
+                ).current_street
+                if cur_street == Street.FLOP and prev_street == Street.PRE_FLOP:
+                    self.state = self.State.WAIT_FOR_FLOP
+                elif cur_street == Street.TURN and prev_street == Street.FLOP:
+                    self.state = self.State.WAIT_FOR_TURN
+                elif cur_street == Street.RIVER and prev_street == Street.TURN:
+                    self.state = self.State.WAIT_FOR_RIVER
+        elif self.state == self.State.WAIT_FOR_FLOP:
+            self.scene.show_flop()
+            sounds["street"].play()
+            self.state = self.state.REPLAY
+        elif self.state == self.State.WAIT_FOR_TURN:
+            self.scene.show_turn()
+            sounds["street"].play()
+            self.state = self.state.REPLAY
+        elif self.state == self.State.WAIT_FOR_RIVER:
+            self.scene.show_river()
+            sounds["street"].play()
+            self.state = self.state.REPLAY
         self.update_buttons()
 
     @pyqtSlot()
@@ -219,8 +242,14 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         if self.state == self.State.ACTIONS:
             self.hand_history.remove_last_action()
             self.scene.request_action(self.hand_history)
-        elif self.state == self.State.REPLAY:
+        elif self.state in (
+            self.State.REPLAY,
+            self.State.WAIT_FOR_FLOP,
+            self.State.WAIT_FOR_TURN,
+            self.State.WAIT_FOR_RIVER,
+        ):
             self.replay_action_cursor -= 1
+            self.state = self.State.REPLAY
             if self.replay_action_cursor > len(self.hand_history.editable_actions()):
                 play_len = self.hand_history.play_length()
                 if self.replay_action_cursor == play_len - 4:
