@@ -522,6 +522,8 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         if self.parent().hide_cards_before_showdown():
             self.hide_hands()
+        else:
+            self.show_known_hands()
 
         self.update_total_pot(hand_history)
 
