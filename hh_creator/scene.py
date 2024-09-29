@@ -598,10 +598,8 @@ class TableScene(QtWidgets.QGraphicsScene):
         last_action = hand_history.last_action
 
         try:
-            if next_street:
-                if last_action.action_type == hh.ActionType.CALL:
-                    sounds["call_closing"].play()
-                sounds["street"].play()
+            if next_street and last_action.action_type == hh.ActionType.CALL:
+                sounds["call_closing"].play()
             else:
                 sounds[last_action.action_type].play()
         except KeyError:
