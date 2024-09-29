@@ -1,8 +1,8 @@
-import sys
 import locale
+import sys
 
 from PyQt5 import QtWidgets
 
-locale.setlocale(locale.LC_ALL, '')
+locale.setlocale(locale.LC_ALL, "")
 
 app = QtWidgets.QApplication(sys.argv)

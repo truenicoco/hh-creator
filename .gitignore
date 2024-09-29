@@ -7,3 +7,4 @@ pyinstaller-win/dist
 **/__pycache__
 *.egg-info
 hh
+.idea

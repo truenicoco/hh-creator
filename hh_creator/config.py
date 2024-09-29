@@ -1,7 +1,7 @@
-import os
 import logging
-from pathlib import Path
+import os
 from configparser import ConfigParser, ExtendedInterpolation
+from pathlib import Path
 
 
 def save_config(window_geometry=None, window_state=None):
@@ -68,7 +68,7 @@ except FileNotFoundError:
 config = ConfigParser(interpolation=ExtendedInterpolation())
 config.read(RESOURCE_PATH / "default.ini", encoding="utf-8")
 if not config_filename.exists():
-    log.info(f"No config file found")
+    log.info("No config file found")
     config_dir.mkdir(parents=True, exist_ok=True)
     save_config()
 else:

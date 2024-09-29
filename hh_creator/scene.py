@@ -2,15 +2,14 @@ import logging
 from decimal import Decimal
 from pathlib import Path
 
-from PyQt5 import QtWidgets, QtGui, Qt
+from PyQt5 import Qt, QtGui, QtWidgets
 
-from . import hh
-from .util import sounds, get_center, Image
+from . import config, hh
 from .animations import Animations
-from .card import Suit, Rank, CardItem, get_winners
-from . import config
+from .card import CardItem, Rank, Suit, get_winners
 from .player import PlayerItemGroup
 from .text import TextItem
+from .util import Image, get_center, sounds
 
 
 class TableScene(QtWidgets.QGraphicsScene):
@@ -405,7 +404,10 @@ class TableScene(QtWidgets.QGraphicsScene):
             pot_item.content = side_pot.amount
 
     def animate_pot_to_winner(
-        self, position: hh.Position, pot_item=None, split=1,
+        self,
+        position: hh.Position,
+        pot_item=None,
+        split=1,
     ):
         player_item = self._get_player_item_from_hh_position(position)
 
@@ -453,13 +455,15 @@ class TableScene(QtWidgets.QGraphicsScene):
                 ),
                 target=self.central_pot_item,
                 scene=self,
-                callbacks=[
-                    lambda: setattr(
-                        self.central_pot_item, "content", central_pot_amount
-                    )
-                ]
-                if i == 0
-                else [],
+                callbacks=(
+                    [
+                        lambda: setattr(
+                            self.central_pot_item, "content", central_pot_amount
+                        )
+                    ]
+                    if i == 0
+                    else []
+                ),
             )
 
     def clear_side_pots(self):

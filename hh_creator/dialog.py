@@ -2,12 +2,11 @@ import logging
 from dataclasses import dataclass
 from decimal import Decimal
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
-from . import hh
-from . import config
-from .util import AutoUI, amount_validator, decimal_conversion, int_conversion
+from . import config, hh
+from .util import AutoUI, amount_validator, decimal_conversion
 
 
 @dataclass

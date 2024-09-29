@@ -1,19 +1,19 @@
-import logging
 import json
-from typing import Union
+import logging
 from pathlib import Path
+from typing import Union
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
+from . import config
+from .animations import Animations
 from .card import CardLook
-from .text import TextItem
+from .dialog import NewHandDialog
 from .hh import HandHistory, HHJSONEncoder, json_hook
 from .scene import TableScene
+from .text import TextItem
 from .util import AutoUI, IncrementableEnum, sounds
-from .dialog import NewHandDialog
-from .animations import Animations
-from . import config
 
 
 class KeyboardShortcutsMixin:
@@ -274,7 +274,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
     @pyqtSlot()
     def on_actionFullScreen_triggered(self):
-        log.debug(f"Toggling full screen")
+        log.debug("Toggling full screen")
         self.checkBoxEditMode.setChecked(False)
         self.full_screen_widget = FullScreenView(main_window=self, scene=self.scene)
 

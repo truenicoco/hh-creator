@@ -1,6 +1,6 @@
 import logging
-from argparse import ArgumentParser
 import sys
+from argparse import ArgumentParser
 
 from PyQt5 import QtWidgets
 
@@ -34,9 +34,11 @@ args = parser.parse_args(app.arguments()[1:])
 logging.basicConfig(
     level=args.loglevel,
     # Force UTF8 because f***ing Windows and its cp1252
-    handlers=[logging.FileHandler(args.log_file, "w", "utf-8")]
-    if args.log_file is not None
-    else None,
+    handlers=(
+        [logging.FileHandler(args.log_file, "w", "utf-8")]
+        if args.log_file is not None
+        else None
+    ),
 )
 
 

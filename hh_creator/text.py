@@ -1,13 +1,13 @@
 import logging
-import typing
 import time
+import typing
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from .config import RESOURCE_PATH
-from .dialog import StackDialog, NameDialog
-from .util import amount_format, decimal_conversion
 from . import config
+from .config import RESOURCE_PATH
+from .dialog import NameDialog, StackDialog
+from .util import amount_format, decimal_conversion
 
 
 class TextItem(QtWidgets.QGraphicsTextItem):

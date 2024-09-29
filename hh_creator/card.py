@@ -1,18 +1,20 @@
+import itertools
 import logging
 from dataclasses import dataclass
-import itertools
 from functools import total_ordering
-from typing import List, Union
 from pathlib import Path
+from typing import List, Union, TYPE_CHECKING
 
-from PyQt5 import QtWidgets, QtCore, Qt
-
-from deuces import Card as DeucesCard, Evaluator
+from deuces import Card as DeucesCard
+from deuces import Evaluator
 from poker.constants import PokerEnum
+from PyQt5 import Qt, QtCore, QtWidgets
 
-# from .player import PlayerItemGroup
-from .util import Image
 from . import config
+from .util import Image
+
+if TYPE_CHECKING:
+    from .player import PlayerItemGroup
 
 
 class Suit(PokerEnum):
