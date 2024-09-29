@@ -19,7 +19,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         self.card_items = []
         self._n_cards = n_cards
         for _ in range(4):
-            self.card_items.append(CardItem())
+            self.card_items.append(CardItem(crop_bottom=True))
 
         self.bet_item = TextItem(
             hide_if_empty=True,

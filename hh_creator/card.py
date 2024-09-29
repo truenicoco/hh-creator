@@ -65,13 +65,18 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
     instances = []
 
     def __init__(
-        self, scale_factor=config.config["look"].getfloat("player_card_scale"), *a, **kw
+        self,
+        scale_factor=config.config["look"].getfloat("player_card_scale"),
+        crop_bottom=False,
+        *a,
+        **kw,
     ):
+        root = Path("cards_cut") if crop_bottom else Path("cards")
         super().__init__(*a, **kw)
         self.scale_factor = scale_factor
         self.faces = {
             (rank, suit): Image.get(
-                Path("cards") / f"{rank.one_letter_format()}{suit.one_letter_format()}"
+                root / f"{rank.one_letter_format()}{suit.one_letter_format()}"
             )
             for rank in Rank
             for suit in Suit
@@ -80,7 +85,7 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
             self.addToGroup(k)
             k.setVisible(False)
             k.setScale(scale_factor)
-        self.back = Image.get(Path("cards") / "back-red")
+        self.back = Image.get(root / "back-red")
         self.back.setScale(scale_factor)
         self.scale_factor = scale_factor
         self.addToGroup(self.back)
