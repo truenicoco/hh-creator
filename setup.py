@@ -6,7 +6,7 @@ setup(
     version="0.0.1",
     install_requires=[
         "poker",
-        "deuces@git+https://github.com/truenicoco/deuces.git",
+        "deuces",
         "PyQt5",
     ],
     packages=["hh_creator"],
