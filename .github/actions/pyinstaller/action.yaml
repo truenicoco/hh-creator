@@ -1,0 +1,30 @@
+# action.yaml
+name: 'PyInstaller Windows'
+description: 'Customisable GitHub Action to package your python code with PyInstaller for Windows'
+branding:
+  icon: 'box'
+  color: 'blue'
+inputs:
+  path:
+    description: 'Directory containing source code (optional requirements.txt).'
+    required: True
+    default: pyinstaller
+  spec:
+    description: 'Specify a file path for .spec file'
+    required: False
+    default: ""
+  requirements:
+    description: 'Specify a file path for requirements.txt file'
+    required: False
+    default: "requirements.txt"
+outputs:
+  output:
+    description: 'The output of PyInstaller'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.path }}
+    - ${{ inputs.spec }}
+    - ${{ inputs.requirements }}
