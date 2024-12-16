@@ -184,10 +184,17 @@ class TableScene(QtWidgets.QGraphicsScene):
 
             player.active = True
 
+            bet_x_hc = conf.getfloat(f"bet{i}_x")
+            bet_y_hc = conf.getfloat(f"bet{i}_y")
+            button_x_hc = conf.getfloat(f"button{i}_x")
+            button_y_hc = conf.getfloat(f"button{i}_y")
+
             player_pos = get_center(player.seat_item, scene=True)
             diff = center_pos[0] - player_pos[0], center_pos[1] - player_pos[1]
             ratio = abs(diff[0] / diff[1])
 
+            # FIXME: this heuristic is bad, but will do until we hardcode
+            #        all button and bet positions
             if ratio > 1.5:
                 bet_y = player_pos[1]
                 bet_y = min(bet_y, 700)
@@ -212,10 +219,19 @@ class TableScene(QtWidgets.QGraphicsScene):
                     bet_y = player_pos[1] + 80
                 button_y = bet_y
 
-            player.bet_item.set_center(bet_x, bet_y, scene=True)
+            player.bet_item.set_center(
+                bet_x if bet_x_hc is None else bet_x_hc,
+                bet_y if bet_y_hc is None else bet_y_hc,
+                scene=True,
+            )
             player.removeFromGroup(player.action_widget_item)
 
-            self.button_position.append([button_x, button_y])
+            self.button_position.append(
+                [
+                    button_x if button_x_hc is None else button_x_hc,
+                    button_y if button_y_hc is None else button_y_hc,
+                ]
+            )
 
     def _clear_text(self):
         for i in self.text_items:
