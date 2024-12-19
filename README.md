@@ -1,5 +1,7 @@
 # Poker hand history creator
 
+![](./screencast.webm)
+
 hh-creator is a [PyQt5](https://riverbankcomputing.com/software/pyqt/download5)-based
 application to create Texas and Omaha Hold'em poker hand histories from scratch,
 including a nice looking hand replayer.
