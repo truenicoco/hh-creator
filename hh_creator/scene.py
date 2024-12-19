@@ -461,7 +461,7 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         # print(amount)
 
-    def ante_animations(self, hand_history: hh.HandHistory, central_pot_amount):
+    def ante_animations(self, hand_history: hh.HandHistory):
         for i, p in enumerate(self.active_players()):
             Animations.text(
                 source=p.stack_item.stack_item,
@@ -469,31 +469,19 @@ class TableScene(QtWidgets.QGraphicsScene):
                 duration=config.config["animation"].getint(
                     "BETS_TO_POT_ANIMATION_DURATION"
                 ),
-                target=self.central_pot_item,
+                target=self.total_pot_item,
                 scene=self,
-                callbacks=(
-                    [
-                        lambda: setattr(
-                            self.central_pot_item, "content", central_pot_amount
-                        )
-                    ]
-                    if i == 0
-                    else []
-                ),
             )
 
-    def bb_ante_animation(self, hand_history: hh.HandHistory, central_pot_amount):
+    def bb_ante_animation(self, hand_history: hh.HandHistory):
         Animations.text(
             source=self.bb_player().stack_item.stack_item,
             content=hand_history.bb_ante,
             duration=config.config["animation"].getint(
                 "BETS_TO_POT_ANIMATION_DURATION"
             ),
-            target=self.central_pot_item,
+            target=self.total_pot_item,
             scene=self,
-            callbacks=[
-                lambda: setattr(self.central_pot_item, "content", central_pot_amount)
-            ],
         )
 
     def clear_side_pots(self):
@@ -585,11 +573,11 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         next_street = self.board_street < hand_history.current_street
         if self.board_street == hh.Street.ANTE and hand_history.ante:
-            self.ante_animations(hand_history, central_pot)
+            self.ante_animations(hand_history)
         elif self.board_street == hh.Street.ANTE and getattr(
             hand_history, "bb_ante", None
         ):
-            self.bb_ante_animation(hand_history, central_pot)
+            self.bb_ante_animation(hand_history)
         elif next_street and self.board_street != hh.Street.ANTE:
             self.bets_to_pot_animations(hand_history)
 
