@@ -196,7 +196,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     self.scene.clear_bet_items()
                     self.scene.update_total_pot(self.hand_history)
                     Animations.start()
-                play_len = self.hand_history.play_length()
+                play_len = self.hand_history.play_length() - (Street.RIVER - self.hand_history.last_action.street)
                 if self.replay_action_cursor == play_len - 4:
                     sounds["street"].play()
                     self.scene.show_flop()
