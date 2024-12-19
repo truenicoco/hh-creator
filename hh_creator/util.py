@@ -136,7 +136,7 @@ def get_center(item, scene=False):
 
 def amount_format(x, n_decimals):
     if float(x).is_integer():
-        return f"{x:n}"
+        return f"{int(x):n}"
     else:
         x = round(x, n_decimals)
         return f"{x:n}"
