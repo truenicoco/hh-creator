@@ -4,7 +4,10 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
+    - uses: astral-sh/setup-uv@v4
     - uses: actions/checkout@v4
 
     - name: Set version from tag or commit SHA
@@ -20,36 +23,30 @@ jobs:
         sed -i "s/NO_VERSION/$VERSION/" hh_creator/__init__.py
         sed -i "s/0.0.0dev/$VERSION/" pyproject.toml
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-
+    # pyinstaller for windows
     - name: Export requirements for pyinstaller
       run: uv pip compile pyproject.toml -o pyinstaller/requirements.txt
     - uses: ./.github/actions/pyinstaller
       with:
         path: pyinstaller
-
-    - name: Build PyPI package
-      run: uv build
-
-  artifacts:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
     - uses: actions/upload-artifact@v4
       with:
         name: hh-creator-${{ github.ref_name }}-windows.zip
         path: pyinstaller/dist/windows
+
+    # python package
+    - name: Build PyPI package
+      run: uv build
     - uses: actions/upload-artifact@v4
       with:
         name: hh-creator-${{ github.ref_name }}-pypi.zip
         path: dist
+    - name: PyPI release
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: uv publish
 
-  gh-release:
-    runs-on: ubuntu-latest
-    needs: build
 
-    steps:
+    # github release
     - name: Zip for github release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: montudor/action-zip@v1
@@ -62,13 +59,3 @@ jobs:
         files:
           hh-creator-${{ github.ref_name }}-windows.zip
           dist/*
-
-  pypi-publish:
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write
-    steps:
-      - name: PyPI release
-        run: uv publish
