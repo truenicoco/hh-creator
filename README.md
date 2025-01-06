@@ -1,3 +1,5 @@
+[![Github action](https://github.com/truenicoco/hh-creator/actions/workflows/build.yaml/badge.svg)](https://github.com/truenicoco/hh-creator/actions/workflows/build.yaml)
+
 # Poker hand history creator
 
 ![](./screenshot.png)
@@ -10,6 +12,18 @@ interesting hands that were played live.
 
 It was developed for the French online poker web community
 [Kill-Tilt](https://www.kill-tilt.fr/).
+
+# Installation
+
+Easy-to-use windows releases are available on [github](https://github.com/truenicoco/hh-creator/releases/latest).
+
+For other platforms you can use the [PyPI package](https://pypi.org/project/hh-creator/), e.g.,
+with [pipx](https://pipx.pypa.io/latest/):
+
+```shell
+pipx install hh-creator
+hh-creator
+```
 
 # License
 
