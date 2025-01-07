@@ -11,6 +11,11 @@ dependencies = [
     "pyqt5-qt5==5.15.2",
 ]
 
+[project.urls]
+Homepage = "https://github.com/truenicoco/hh-creator/"
+Repository = "https://github.com/truenicoco/hh-creator/"
+Issues = "https://github.com/truenicoco/hh-creator/issues"
+
 [project.gui-scripts]
 hh-creator = "hh_creator.__main__:main"
 
