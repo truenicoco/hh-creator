@@ -30,7 +30,7 @@
 		C300,358.3,443.3,215,620,215z"/>
 	<path class="st4" d="M625,215h670c179.5,0,325,145.5,325,325l0,0c0,179.5-145.5,325-325,325H625c-179.5,0-325-145.5-325-325l0,0
 		C300,360.5,445.5,215,625,215z"/>
-	
+
 		<radialGradient id="SVGID_1_" cx="970.5839" cy="-680.5231" r="630.8271" gradientTransform="matrix(0.9998 -2.188468e-02 1.450954e-02 0.6628 -0.5158 1012.2916)" gradientUnits="userSpaceOnUse">
 		<stop  offset="0" style="stop-color:#008D36"/>
 		<stop  offset="0.847" style="stop-color:#006633"/>

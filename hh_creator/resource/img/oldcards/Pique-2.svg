@@ -12,14 +12,14 @@
 </style>
 <g id="cartes">
 	<g id="pique">
-		
+
 			<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="510" y1="1420" x2="510" y2="0" gradientTransform="matrix(1 0 0 -1 0 1420)">
 			<stop  offset="0" style="stop-color:#4E515B"/>
 			<stop  offset="0.9" style="stop-color:#090A0D"/>
 		</linearGradient>
 		<path class="st0" d="M140,0h740c77.3,0,140,62.7,140,140v1140c0,77.3-62.7,140-140,140H140c-77.3,0-140-62.7-140-140V140
 			C0,62.7,62.7,0,140,0z"/>
-		
+
 			<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="510" y1="1420" x2="510" y2="0" gradientTransform="matrix(1 0 0 -1 0 1420)">
 			<stop  offset="0" style="stop-color:#4E515B"/>
 			<stop  offset="0.9" style="stop-color:#090A0D"/>

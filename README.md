@@ -39,7 +39,7 @@ The source code is released under the
 [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.html).
 
 The graphics were made by [Julien Escalas](http://www.julienescalas.fr/) and are
-released under the [Creative Commons 
+released under the [Creative Commons
 Attribution-ShareAlike license](https://creativecommons.org/licenses/by-sa/4.0/).
 
 The [Lato fonts](https://www.latofonts.com/) are under the

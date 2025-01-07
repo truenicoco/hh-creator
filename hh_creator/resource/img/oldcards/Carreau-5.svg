@@ -11,7 +11,7 @@
 </style>
 <g id="cartes">
 	<g id="carreau">
-		
+
 			<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="510.5993" y1="-340" x2="510.5993" y2="1080" gradientTransform="matrix(1 0 0 1 0 340)">
 			<stop  offset="0" style="stop-color:#005484"/>
 			<stop  offset="1" style="stop-color:#000013"/>
