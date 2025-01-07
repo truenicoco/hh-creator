@@ -17,6 +17,11 @@ hh-creator = "hh_creator.__main__:main"
 [tool.setuptools.packages.find]
 include = ["hh_creator"]
 
+[dependency-groups]
+dev = [
+    "pyproject-pre-commit[ruff]>=0.3.6",
+]
+
 [tool.setuptools]
 # FIXME: remove this when the setuptools upstream bug is fixed
 # https://github.com/astral-sh/uv/issues/9513#issuecomment-2519527822
