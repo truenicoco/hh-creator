@@ -545,7 +545,6 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         self.update_total_pot(hand_history)
 
-        central_pot = hand_history.central_pot
         total_pot = hand_history.total_pot
 
         if hand_history.current_player is not None:

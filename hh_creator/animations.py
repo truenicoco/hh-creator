@@ -59,7 +59,7 @@ class Animations:
             content_is_number=source.content_is_number,
             currency=source.currency,
             currency_is_after=source.currency_is_after,
-            **font_kwargs
+            **font_kwargs,
         )
         item_to_animate.content = content
         item_to_animate.set_center(*get_center(source, scene=True))

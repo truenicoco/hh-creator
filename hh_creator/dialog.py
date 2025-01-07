@@ -1,4 +1,5 @@
 import logging
+import typing
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -7,6 +8,9 @@ from PyQt5.QtCore import pyqtSlot
 
 from . import config, hh
 from .util import AutoUI, amount_validator, decimal_conversion
+
+if typing.TYPE_CHECKING:
+    from .player import PlayerItemGroup
 
 
 @dataclass

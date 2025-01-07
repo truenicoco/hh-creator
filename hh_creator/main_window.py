@@ -134,8 +134,8 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         dialog = NewHandDialog(parent=self)
         code = dialog.exec()
         if code:
-            sb = dialog.get_field_value("SB")
-            ante = dialog.get_field_value("Ante")
+            dialog.get_field_value("SB")
+            dialog.get_field_value("Ante")
             n_digits = dialog.get_field_value("Decimals")
 
             log.debug(f"Will use {n_digits} digits for display rounding")
@@ -198,7 +198,9 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     self.scene.clear_bet_items()
                     self.scene.update_total_pot(self.hand_history)
                     Animations.start()
-                play_len = self.hand_history.play_length() - (Street.RIVER - self.hand_history.last_action.street)
+                play_len = self.hand_history.play_length() - (
+                    Street.RIVER - self.hand_history.last_action.street
+                )
                 if self.replay_action_cursor == play_len - 4:
                     sounds["street"].play()
                     self.scene.show_flop()
