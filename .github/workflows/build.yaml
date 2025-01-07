@@ -13,13 +13,14 @@ jobs:
     - name: Set version from tag or commit SHA
       run: |
         case ${{ github.ref }} in
-          "refs/tags/v*")
+          refs/tags/v*)
             VERSION=$(echo ${{ github.ref_name }} | cut -c2-)
             ;;
           *)
             VERSION=0.0.0dev+git$(date +%Y%m%d-%H%M)-$(echo ${{ github.sha }} | cut -c1-8)
             ;;
         esac
+        echo Package will be versioned as $VERSION
         sed -i "s/NO_VERSION/$VERSION/" hh_creator/__init__.py
         sed -i "s/0.0.0dev/$VERSION/" pyproject.toml
 
