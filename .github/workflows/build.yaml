@@ -5,7 +5,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
+      id-token: write  # for the PyPI release
+      contents: write  # for the GH release
     steps:
     - uses: astral-sh/setup-uv@v4
     - uses: actions/checkout@v4
