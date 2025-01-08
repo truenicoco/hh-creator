@@ -1,4 +1,4 @@
-name: Package Application
+name: Test and build
 on: push
 
 env:
@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: astral-sh/setup-uv@v4
     - uses: actions/checkout@v4
+    - name: Setup venv
+      run: uv venv && uv pip install -e .
+
+    - name: Run tests
+      run: uv run --frozen pytest test
 
     - name: Set version from tag or commit SHA
       run: |
