@@ -134,12 +134,15 @@ def get_center(item, scene=False):
     return [x + rect.x(), y + rect.y()]
 
 
-def amount_format(x, n_decimals):
-    if float(x).is_integer():
-        return f"{int(x):n}"
-    else:
-        x = round(x, n_decimals)
-        return f"{x:n}"
+def amount_format(x, n_decimals=3):
+    if not isinstance(x, Decimal):
+        x = Decimal(str(x))  # Convert to Decimal to avoid precision issues
+
+    x = round(x, n_decimals)
+
+    # Normalize the number by removing trailing zeroes.
+    # "f" prevents scientific notation.
+    return format(x.normalize(), "f")
 
 
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]

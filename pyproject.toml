@@ -25,6 +25,7 @@ include = ["hh_creator"]
 [dependency-groups]
 dev = [
     "pyproject-pre-commit[ruff]>=0.3.6",
+    "pytest>=8.3.4",
 ]
 
 [tool.setuptools]
