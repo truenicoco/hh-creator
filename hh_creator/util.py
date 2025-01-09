@@ -3,7 +3,7 @@ from decimal import Decimal, InvalidOperation
 from enum import Enum
 
 from poker.constants import PokerEnum
-from PyQt5 import Qt, QtCore, QtGui, QtMultimedia, QtWidgets, uic
+from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
 
 from .config import RESOURCE_PATH
 
@@ -148,24 +148,33 @@ def amount_format(x, n_decimals=3):
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]
 
 
-_sounds = {
-    f.stem: QtMultimedia.QSound(str(f))
-    for f in (RESOURCE_PATH / "sounds").glob("*.wav")
-}
+def init_sounds():
+    # we need to import it here or else tests cannot be played in CI:
+    # ImportError: libpulse-mainloop-glib.so.0: cannot open shared object file: No such file or directory
+    from PyQt5 import QtMultimedia
 
-sounds = {
-    ActionType.BET: _sounds["bet"],
-    ActionType.RAISE: _sounds["bet"],
-    ActionType.CHECK: _sounds["check"],
-    ActionType.CALL: _sounds["call"],
-    ActionType.FOLD: _sounds["fold"],
-    ActionType.BB: _sounds["bet"],
-    ActionType.ANTE: _sounds["bet"],
-    ActionType.STRADDLE: _sounds["bet"],
-    "street": _sounds["street"],
-    "call_closing": _sounds["call_closing"],
-}
+    _sounds = {
+        f.stem: QtMultimedia.QSound(str(f))
+        for f in (RESOURCE_PATH / "sounds").glob("*.wav")
+    }
 
+    sounds.update(
+        {
+            ActionType.BET: _sounds["bet"],
+            ActionType.RAISE: _sounds["bet"],
+            ActionType.CHECK: _sounds["check"],
+            ActionType.CALL: _sounds["call"],
+            ActionType.FOLD: _sounds["fold"],
+            ActionType.BB: _sounds["bet"],
+            ActionType.ANTE: _sounds["bet"],
+            ActionType.STRADDLE: _sounds["bet"],
+            "street": _sounds["street"],
+            "call_closing": _sounds["call_closing"],
+        }
+    )
+
+
+sounds = {}
 
 amount_validator = AmountValidatorWithBounds(0)
 int_validator = QtGui.QIntValidator()

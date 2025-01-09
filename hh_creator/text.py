@@ -13,6 +13,8 @@ from .util import amount_format, decimal_conversion
 class TextItem(QtWidgets.QGraphicsTextItem):
     n_decimals = 1
 
+    _fontstr = None
+
     def __init__(
         self,
         postfix="",
@@ -29,7 +31,9 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         **kwa,
     ):
         super().__init__(*a, **kwa)
-        font = QtGui.QFont(_fontstr, point_size, weight, italic)
+        if self._fontstr is None:
+            _load_font()
+        font = QtGui.QFont(self._fontstr, point_size, weight, italic)
         self.setFont(font)
         self.setDefaultTextColor(QtGui.QColor(color))
         self.set_center(0, 0)
@@ -187,14 +191,14 @@ class NameItem(TextItem):
             self.content = dialog.widgets["lineEdit"].text()
 
 
-log = logging.getLogger(__name__)
+def _load_font():
+    _id = QtGui.QFontDatabase.addApplicationFont(str(RESOURCE_PATH / "Lato-Black.ttf"))
+    _fontstr = QtGui.QFontDatabase.applicationFontFamilies(_id)
+    try:
+        TextItem._fontstr = _fontstr[0]
+    except IndexError:
+        log.warning("Could not load Lato font file for some reason")
+        TextItem._fontstr = "Lato"
 
-FILE_NAME = RESOURCE_PATH / "Lato-Black.ttf"
-_id = QtGui.QFontDatabase.addApplicationFont(str(FILE_NAME))
-_fontstr = QtGui.QFontDatabase.applicationFontFamilies(_id)
-try:
-    _fontstr = _fontstr[0]
-except IndexError:
-    log.warning("Could not load Lato font file for some reason")
-    _fontstr = "Lato"
-_FONT = QtGui.QFont(_fontstr, 30, 100, False)
+
+log = logging.getLogger(__name__)

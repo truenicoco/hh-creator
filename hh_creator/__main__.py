@@ -10,11 +10,10 @@ from PyQt5 import QtWidgets
 
 from hh_creator import __version__
 from hh_creator.main_window import MainWindow
+from hh_creator.util import init_sounds
 
 
 def main():
-    app = QtWidgets.QApplication.instance()
-
     parser = ArgumentParser()
 
     parser.add_argument(
@@ -35,6 +34,7 @@ def main():
         ),
     )
 
+    app = QtWidgets.QApplication(sys.argv)
     args = parser.parse_args(app.arguments()[1:])
     # noinspection PyArgumentList
     logging.basicConfig(
@@ -48,6 +48,7 @@ def main():
     )
     logging.info("Starting HH Creator version %s", __version__)
 
+    init_sounds()
     window = MainWindow()
     app.main_window = window
     sys.exit(app.exec())
