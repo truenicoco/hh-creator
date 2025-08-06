@@ -19,20 +19,6 @@ jobs:
     - name: Run tests
       run: uv run --frozen pytest test
 
-    - name: Set version from tag or commit SHA
-      run: |
-        case ${{ github.ref }} in
-          refs/tags/v*)
-            VERSION=$(echo ${{ github.ref_name }} | cut -c2-)
-            ;;
-          *)
-            VERSION=0.0.0dev+git$(date +%Y%m%d-%H%M)-$(echo ${{ github.sha }} | cut -c1-8)
-            ;;
-        esac
-        echo Package will be versioned as $VERSION
-        sed -i "s/NO_VERSION/$VERSION/" hh_creator/__init__.py
-        sed -i "s/0.0.0dev/$VERSION/" pyproject.toml
-
     # python package
     - name: Build PyPI package
       run: uv build
@@ -51,21 +37,6 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-
-    - name: Set version from tag or commit SHA
-      shell: bash
-      run: |
-        case ${{ github.ref }} in
-          refs/tags/v*)
-            VERSION=$(echo ${{ github.ref_name }} | cut -c2-)
-            ;;
-          *)
-            VERSION=0.0.0dev+git$(date +%Y%m%d-%H%M)-$(echo ${{ github.sha }} | cut -c1-8)
-            ;;
-        esac
-        echo Package will be versioned as $VERSION
-        sed -i "s/NO_VERSION/$VERSION/" hh_creator/__init__.py
-        sed -i "s/0.0.0dev/$VERSION/" pyproject.toml
 
     - name: Install uv
       run: pip install uv
