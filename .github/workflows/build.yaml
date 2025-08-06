@@ -5,7 +5,7 @@ env:
   ARTIFACT_PREFIX: hh-creator-${{ github.ref_name }}
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # for the PyPI release
@@ -33,17 +33,6 @@ jobs:
         sed -i "s/NO_VERSION/$VERSION/" hh_creator/__init__.py
         sed -i "s/0.0.0dev/$VERSION/" pyproject.toml
 
-    # pyinstaller for windows
-    - name: Export requirements for pyinstaller
-      run: uv pip compile pyproject.toml -o pyinstaller/requirements.txt
-    - uses: ./.github/actions/pyinstaller
-      with:
-        path: pyinstaller
-    - uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.ARTIFACT_PREFIX }}-windows
-        path: pyinstaller/dist/windows
-
     # python package
     - name: Build PyPI package
       run: uv build
@@ -55,15 +44,64 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       run: uv publish
 
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-    # github release
+    - name: Set version from tag or commit SHA
+      shell: bash
+      run: |
+        case ${{ github.ref }} in
+          refs/tags/v*)
+            VERSION=$(echo ${{ github.ref_name }} | cut -c2-)
+            ;;
+          *)
+            VERSION=0.0.0dev+git$(date +%Y%m%d-%H%M)-$(echo ${{ github.sha }} | cut -c1-8)
+            ;;
+        esac
+        echo Package will be versioned as $VERSION
+        sed -i "s/NO_VERSION/$VERSION/" hh_creator/__init__.py
+        sed -i "s/0.0.0dev/$VERSION/" pyproject.toml
+
+    - name: Install uv
+      run: pip install uv
+
+    - name: Setup venv and install dependencies
+      run: |
+        uv venv
+        uv pip install -e .
+        uv pip install pyinstaller
+        uv pip uninstall pathlib
+
+    - name: Export requirements for pyinstaller
+      run: uv pip compile pyproject.toml -o pyinstaller/requirements.txt
+
+    - name: Build with PyInstaller
+      run: |
+        .venv\Scripts\activate
+        cd pyinstaller
+        pyinstaller --clean -y --dist ./dist/windows --workpath /tmp hh-creator.spec
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_PREFIX }}-windows
+        path: pyinstaller/dist
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
     - uses: actions/download-artifact@v4
     - name: Check what artifacts have been downloaded
       run: |
         ls -la
         ls -la ${{ env.ARTIFACT_PREFIX }}*
     - name: Github release
-      if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v2
       with:
         files: ${{ env.ARTIFACT_PREFIX }}*
