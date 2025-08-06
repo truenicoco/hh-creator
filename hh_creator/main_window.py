@@ -152,8 +152,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.scene.n_seats = dialog.get_field_value("Players")
 
             self.scene.set_all_stacks(
-                config.config["new_hand"].getint("default_stack_in_bb")
-                * dialog.get_field_value("BB")
+                dialog.get_field_value("Stack") * dialog.get_field_value("BB")
             )
 
             self.scene.set_n_cards(dialog.get_n_cards())
@@ -166,7 +165,11 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
             conf = dialog.conf
             for name, field in dialog.FIELDS.items():
-                conf[name] = config.escape_dollar(dialog.get_field_value(name))
+                if name == "Stack":
+                    conf_name = "default_stack_in_bb"
+                else:
+                    conf_name = name
+                conf[conf_name] = config.escape_dollar(dialog.get_field_value(name))
                 if field.checkable:
                     conf[f"{name}_checked"] = str(
                         dialog._get_checkbox(name).isChecked()

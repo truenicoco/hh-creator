@@ -7,7 +7,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
 from . import config, hh
-from .util import AutoUI, amount_validator, decimal_conversion
+from .util import AutoUI, decimal_conversion, amount_validator
 
 if typing.TYPE_CHECKING:
     from .player import PlayerItemGroup
@@ -28,6 +28,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         "Straddle": Field(int, True),
         "Ante": Field(Decimal, True),
         "BBAnte": Field(Decimal, True),
+        "Stack": Field(Decimal, False),
         "Players": Field(int, False),
         "Currency": Field(str, True),
         "Variant": Field(str, False, "comboBox", "CurrentText"),
@@ -44,8 +45,12 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
         conf = config.config["new_hand"]
         for name, field in self.FIELDS.items():
+            if name == "Stack":
+                default = conf.get("default_stack_in_bb")
+            else:
+                default = conf.get(name)
             widget = self._get_widget(name)
-            getattr(widget, f"set{field.input_property}")(conf.get(name))
+            getattr(widget, f"set{field.input_property}")(default)
             if field.checkable:
                 checkbox = self._get_checkbox(name)
                 checked = conf.getboolean(f"{name}_checked")
@@ -166,7 +171,9 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         ante = self.get_field_value("Ante", default=0)
         players = self.get_field_value("Players", default=0)
         decimals = self.get_field_value("Decimals", default=0)
+        stack = self.get_field_value("Stack", default=0)
 
+        stack_ok = stack > 0
         sb_ok = 0 <= sb <= bb
         bb_ok = 0 < bb
         straddle_ok = (
@@ -178,7 +185,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         decimals_ok = decimals >= 0
 
         self.ok_button.setEnabled(
-            all((sb_ok, bb_ok, straddle_ok, ante_ok, players_ok, decimals_ok))
+            all((stack_ok, sb_ok, bb_ok, straddle_ok, ante_ok, players_ok, decimals_ok))
         )
 
 
