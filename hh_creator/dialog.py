@@ -208,7 +208,7 @@ class StackDialog(QtWidgets.QDialog, AutoUI):
         super().__init__(parent)
         self.line_edit: QtWidgets.QLineEdit = self.widgets["lineEdit"]
         self.line_edit.setText(str(value))
-        self.line_edit.setValidator(amount_validator)
+        # self.line_edit.setValidator(amount_validator)
         self.line_edit.selectAll()
         self.show()
 
