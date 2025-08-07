@@ -158,7 +158,7 @@ class StackItem(QtWidgets.QGraphicsItemGroup):
         timer.timeout.connect(lambda: self.stack_item.setVisible(True))
         timer.timeout.connect(lambda: self.action_item.setVisible(False))
         timer.timeout.connect(
-            lambda: log.debug(f"end:{time.time()} ({time.time()-start})")
+            lambda: log.debug(f"end:{time.time()} ({time.time() - start})")
         )
         timer.start(config.config["animation"].getint("LAST_ACTION_DURATION"))
 

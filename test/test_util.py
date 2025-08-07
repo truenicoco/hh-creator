@@ -2,6 +2,7 @@ from decimal import Decimal
 
 import hh_creator.util as ut
 
+
 def test_format_amount():
     assert ut.amount_format(Decimal("1.325"), 3) == "1.325"
     assert ut.amount_format(2, 3) == "2"
