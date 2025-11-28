@@ -104,6 +104,8 @@ class IntValidator(QtGui.QIntValidator):
 
 
 def decimal_conversion(text):
+    if isinstance(text, Decimal):
+        return text
     try:
         return Decimal(text.replace(",", "."))
     except InvalidOperation:
