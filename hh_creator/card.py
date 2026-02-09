@@ -7,10 +7,10 @@ from typing import List, Union, TYPE_CHECKING
 
 from deuces import Card as DeucesCard
 from deuces import Evaluator
-from poker.constants import PokerEnum
 from PyQt5 import Qt, QtCore, QtWidgets
 
 from . import config
+from .poker_enum import PokerEnum
 from .util import Image
 
 if TYPE_CHECKING:

@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "deuces>=0.2.1",
-    "poker>=0.30.0",
     "pyqt5",
     "pyqt5-qt5==5.15.2",
 ]

@@ -2,7 +2,7 @@ import logging
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 
-from poker.constants import PokerEnum
+from .poker_enum import PokerEnum
 from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
 
 from .config import RESOURCE_PATH

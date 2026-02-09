@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import List, Union
 
-from poker.constants import PokerEnum
+from .poker_enum import PokerEnum
 
 from hh_creator.util import BLINDS, ActionType, IncrementableEnum
 
