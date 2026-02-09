@@ -5,6 +5,7 @@ from typing import Union
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QMessageBox
 
 from . import config
 from .animations import Animations
@@ -58,6 +59,9 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
         self.full_screen_widget = None
 
+        self.background_color = "black"
+        self.webcam = "plain"
+
         self.graphics_view: QtWidgets.QGraphicsView = self.widgets["graphicsView"]
 
         self.hand_history: Union[None, HandHistory] = None
@@ -80,6 +84,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.state = self.State.LAUNCH
 
         self.current_filename = None
+        self.update_background()
         if show_new_hh_dialog:
             self.on_actionNew_triggered()
 
@@ -323,19 +328,43 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
     @pyqtSlot()
     def on_actionWebcamPlain_triggered(self):
-        self.scene.change_background("plain")
+        self.webcam = "plain"
+        self.update_background()
 
     @pyqtSlot()
     def on_actionWebcamBoth_triggered(self):
-        self.scene.change_background("both")
+        self.webcam = "both"
+        self.update_background()
 
     @pyqtSlot()
     def on_actionWebcamLeft_triggered(self):
-        self.scene.change_background("left")
+        self.webcam = "left"
+        self.update_background()
 
     @pyqtSlot()
     def on_actionWebcamRight_triggered(self):
-        self.scene.change_background("right")
+        self.webcam = "right"
+        self.update_background()
+
+    @pyqtSlot()
+    def on_actionBackgroundBlack_triggered(self):
+        self.background_color = "black"
+        self.update_background()
+
+    @pyqtSlot()
+    def on_actionBackgroundViolet_triggered(self):
+        self.background_color = "violet"
+        self.update_background()
+
+    @pyqtSlot()
+    def on_actionBackgroundBlue_triggered(self):
+        self.background_color = "blue"
+        self.update_background()
+
+    @pyqtSlot()
+    def on_actionBackgroundRed_triggered(self):
+        self.background_color = "red"
+        self.update_background()
 
     @pyqtSlot()
     def on_actionBackBlue_triggered(self):
@@ -493,6 +522,20 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             back.setEnabled(cur > -1)
 
             start.setEnabled(True)
+
+    def update_background(self):
+        file_name = f"{self.background_color}-{self.webcam}"
+        try:
+            self.scene.change_background(file_name)
+        except FileNotFoundError:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Image non trouvée")
+            msg.setInformativeText(
+                f"Il manque un fichier pour avoir ce fond: {file_name}"
+            )
+            msg.setWindowTitle("Erreur")
+            msg.exec_()
 
 
 class FullScreenView(QtWidgets.QGraphicsView, KeyboardShortcutsMixin):

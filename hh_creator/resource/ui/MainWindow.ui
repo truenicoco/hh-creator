@@ -127,14 +127,23 @@
      <addaction name="actionBackRed"/>
      <addaction name="actionBackBlue"/>
     </widget>
+    <widget class="QMenu" name="menuBackground">
+     <property name="title">
+      <string>Couleur du fond</string>
+     </property>
+     <addaction name="actionBackgroundBlack"/>
+     <addaction name="actionBackgroundViolet"/>
+     <addaction name="actionBackgroundBlue"/>
+     <addaction name="actionBackgroundRed"/>
+    </widget>
     <widget class="QMenu" name="menuWebcam">
      <property name="title">
       <string>Webcam</string>
      </property>
-     <addaction name="actionLeft"/>
-     <addaction name="actionRight"/>
-     <addaction name="actionBoth"/>
-     <addaction name="actionSans"/>
+     <addaction name="actionWebcamLeft"/>
+     <addaction name="actionWebcamRight"/>
+     <addaction name="actionWebcamBoth"/>
+     <addaction name="actionWebcamSans"/>
     </widget>
     <addaction name="actionFullScreen"/>
     <addaction name="separator"/>
@@ -142,6 +151,7 @@
     <addaction name="actionHideHandsBeforeShowdown"/>
     <addaction name="separator"/>
     <addaction name="menuTable"/>
+    <addaction name="menuBackground"/>
     <addaction name="menuWebcam"/>
     <addaction name="menuCardsBack"/>
     <addaction name="separator"/>
@@ -244,22 +254,22 @@
     <string>Cacher mains avant showdown</string>
    </property>
   </action>
-  <action name="actionLeft">
+  <action name="actionWebcamLeft">
    <property name="text">
     <string>Gauche</string>
    </property>
   </action>
-  <action name="actionRight">
+  <action name="actionWebcamRight">
    <property name="text">
     <string>Droite</string>
    </property>
   </action>
-  <action name="actionBoth">
+  <action name="actionWebcamBoth">
    <property name="text">
     <string>Les deux</string>
    </property>
   </action>
-  <action name="actionSans">
+  <action name="actionWebcamSans">
    <property name="text">
     <string>Sans</string>
    </property>
@@ -272,6 +282,26 @@
   <action name="actionRestoreConfig">
    <property name="text">
     <string>Restaurer la configuration par défaut</string>
+   </property>
+  </action>
+  <action name="actionBackgroundBlack">
+   <property name="text">
+    <string>Noir</string>
+   </property>
+  </action>
+  <action name="actionBackgroundViolet">
+   <property name="text">
+    <string>Violet</string>
+   </property>
+  </action>
+  <action name="actionBackgroundBlue">
+   <property name="text">
+    <string>Bleu</string>
+   </property>
+  </action>
+  <action name="actionBackgroundRed">
+   <property name="text">
+    <string>Rouge</string>
    </property>
   </action>
   <action name="actionOpenGL">

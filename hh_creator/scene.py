@@ -137,7 +137,13 @@ class TableScene(QtWidgets.QGraphicsScene):
 
     def _create_background(self):
         table_item = Image.get(Path("table") / config.config["look"].get("table"))
-        background = Image.get(Path("background") / config.config["look"].get("webcam"))
+        webcam = config.config["look"].get("webcam")
+        if "-" not in webcam:
+            webcam = f"black-{webcam}"
+        try:
+            background = Image.get(Path("background") / webcam)
+        except FileNotFoundError:
+            background = Image.get(Path("background") / "black-plain")
 
         shadow = QtWidgets.QGraphicsDropShadowEffect()
         shadow.setBlurRadius(config.config["look"].getfloat("TABLE_SHADOW_RADIUS"))
