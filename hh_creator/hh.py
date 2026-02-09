@@ -192,7 +192,7 @@ class HandHistory:
         self.ante = ante
         self.bb_ante = bb_ante
 
-        self.players = []
+        self.players: list[Player] = []
 
         if stacks is not None:
             self.set_stacks(stacks)
@@ -213,6 +213,10 @@ class HandHistory:
             self.players.append(
                 Player(position=pos, stack=Decimal(stack), hand_history=self)
             )
+
+    @property
+    def is_hu(self) -> bool:
+        return len(self.players) == 2
 
     def post_blinds_and_antes(self):
         self.current_player = self.players[0]
@@ -279,7 +283,7 @@ class HandHistory:
 
     def _next_street(self):
         # HU special case
-        if len(self.players) == 2 and self.current_street == Street.PRE_FLOP:
+        if self.is_hu and self.current_street == Street.PRE_FLOP:
             self.players = self.players[::-1]
         self.current_street = self.current_street.next()
         if self.current_street == Street.SHOWDOWN:
@@ -518,6 +522,8 @@ class HandHistory:
             if action_type in BLINDS + [ActionType.ANTE]:
                 continue
             hh.add_action(action_type, action["amount"])
+        if hh.is_hu and hh.players[0].position == Position.BB:
+            hh.players = hh.players[::-1]
         return hh
 
     def to_json(self):
