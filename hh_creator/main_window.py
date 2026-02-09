@@ -53,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         State.WAIT_FOR_RIVER: "Suivant = afficher river",
     }
 
-    def __init__(self):
+    def __init__(self, show_new_hh_dialog: bool = True):
         super().__init__()
 
         self.full_screen_widget = None
@@ -80,7 +80,8 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.state = self.State.LAUNCH
 
         self.current_filename = None
-        self.on_actionNew_triggered()
+        if show_new_hh_dialog:
+            self.on_actionNew_triggered()
 
     def _make_table_scene(self):
         table_scene = TableScene(self)

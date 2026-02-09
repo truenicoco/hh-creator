@@ -33,6 +33,7 @@ def main():
             else None
         ),
     )
+    parser.add_argument("--load", help="Load a HH file from disk")
 
     app = QtWidgets.QApplication(sys.argv)
     args = parser.parse_args(app.arguments()[1:])
@@ -49,8 +50,10 @@ def main():
     logging.info("Starting HH Creator version %s", __version__)
 
     init_sounds()
-    window = MainWindow()
+    window = MainWindow(show_new_hh_dialog=args.load is None)
     app.main_window = window
+    if args.load:
+        app.main_window.load_hh(args.load)
     sys.exit(app.exec())
 
 
