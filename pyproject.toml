@@ -37,3 +37,6 @@ build-backend = "setuptools.build_meta"
 # FIXME: remove this when the setuptools upstream bug is fixed
 # https://github.com/astral-sh/uv/issues/9513#issuecomment-2519527822
 license-files = []
+
+[tool.ruff.lint]
+extend-select = ["I"]

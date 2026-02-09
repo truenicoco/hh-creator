@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass
 from functools import total_ordering
 from pathlib import Path
-from typing import List, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Union
 
 from deuces import Card as DeucesCard
 from deuces import Evaluator

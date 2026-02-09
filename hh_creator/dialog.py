@@ -7,7 +7,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
 from . import config, hh
-from .util import AutoUI, decimal_conversion, amount_validator
+from .util import AutoUI, amount_validator, decimal_conversion
 
 if typing.TYPE_CHECKING:
     from .player import PlayerItemGroup
