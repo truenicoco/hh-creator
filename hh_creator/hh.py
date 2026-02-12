@@ -284,7 +284,7 @@ class HandHistory:
     def _next_street(self):
         # HU special case
         if self.is_hu and self.current_street == Street.PRE_FLOP:
-            self.players = self.players[::-1]
+            self.current_player = self.get_player_by_position(Position.SB)
         self.current_street = self.current_street.next()
         if self.current_street == Street.SHOWDOWN:
             log.info("No more action possible, showdown time")
