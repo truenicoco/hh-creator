@@ -58,7 +58,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_PREFIX }}-windows
-        path: pyinstaller/dist
+        path: pyinstaller/dist/windows/hh-creator
 
   release:
     needs: [build-linux, build-windows]
@@ -69,8 +69,12 @@ jobs:
     - name: Check what artifacts have been downloaded
       run: |
         ls -la
-        ls -la ${{ env.ARTIFACT_PREFIX }}*
+        ls -la ${{ env.ARTIFACT_PREFIX }}
+    - uses: vimtor/action-zip@v1.2
+      with:
+        files: ${{ env.ARTIFACT_PREFIX }}-windows
+        dest: ${{ env.ARTIFACT_PREFIX }}-windows.zip
     - name: Github release
       uses: softprops/action-gh-release@v2
       with:
-        files: ${{ env.ARTIFACT_PREFIX }}*
+        files: ${{ env.ARTIFACT_PREFIX }}-windows.zip
