@@ -249,7 +249,13 @@ class HandHistory:
                 return p
 
     def _non_folded_players_after_current(self):
-        start = self.players.index(self.current_player) + 1
+        if self.is_hu:
+            if self.current_street <= Street.PRE_FLOP:
+                start = self.players.index(self.get_player_by_position(Position.SB))
+            elif self.current_street > Street.PRE_FLOP:
+                start = self.players.index(self.get_player_by_position(Position.BB))
+        else:
+            start = self.players.index(self.current_player) + 1
         players = self.players[start:] + self.players[:start]
         players = [p for p in players if not p.has_folded()]
         return players
@@ -282,9 +288,6 @@ class HandHistory:
             self._next_street()
 
     def _next_street(self):
-        # HU special case
-        if self.is_hu and self.current_street == Street.PRE_FLOP:
-            self.players = self.players[::-1]
         self.current_street = self.current_street.next()
         if self.current_street == Street.SHOWDOWN:
             log.info("No more action possible, showdown time")
