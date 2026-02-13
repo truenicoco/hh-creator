@@ -1,6 +1,7 @@
 import logging
 from decimal import Decimal, InvalidOperation
 from enum import Enum
+from functools import total_ordering
 
 from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
 
@@ -27,6 +28,7 @@ class ActionType(PokerEnum):
     STRADDLE = ("straddle",)
 
 
+@total_ordering
 class IncrementableEnum(Enum):
     def next(self):
         return self.__class__(self._value_ + 1)
@@ -37,11 +39,17 @@ class IncrementableEnum(Enum):
     def __str__(self):
         return self._name_
 
-    def __gt__(self, other):
-        return self._value_ > other._value_
+    def __lt__(self, other):
+        return self._value_ < other._value_
+
+    def __eq__(self, other):
+        return self._value_ == other._value_
 
     def __sub__(self, other):
         return self._value_ - other._value_
+
+    def __hash__(self) -> int:
+        return self._value_
 
 
 class Image:
