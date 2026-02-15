@@ -130,7 +130,9 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         self.highlight_effect = highlight_effect
 
-    def _get_player_item_from_hh_position(self, position: hh.Position):
+    def _get_player_item_from_hh_position(
+        self, position: hh.Position
+    ) -> PlayerItemGroup:
         for p in self.active_players():
             if p.hh_position == position:
                 return p
@@ -426,6 +428,7 @@ class TableScene(QtWidgets.QGraphicsScene):
             p = self._get_player_item_from_hh_position(last_action.player.position)
             p.animate_stack_to_bet(last_action.amount, 0, target=self.central_pot_item)
             p.bet_item.content = last_action.amount
+            p.bet_item.setVisible(False)
 
         side_pots = hand_history.side_pots()
 
@@ -438,6 +441,9 @@ class TableScene(QtWidgets.QGraphicsScene):
                 )
 
                 bet_item = player_item.bet_item
+                if not bet_item.isVisible():
+                    continue
+
                 Animations.text(
                     source=bet_item,
                     target=pot_item,
