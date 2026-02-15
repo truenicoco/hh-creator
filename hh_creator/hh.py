@@ -542,7 +542,7 @@ class HandHistory:
 
     def n_pseudo_actions(self):
         # used by replayer to delay apparition of turn and river
-        if self.last_action is None:
+        if self.last_action is None or self.last_action.street == Street.PRE_FLOP:
             return 0
         return Street.RIVER - self.last_action.street
 
