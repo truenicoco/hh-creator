@@ -140,6 +140,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             scene=self.scene(),
             callbacks=[lambda: setattr(self.bet_item, "content", street_bet_amount)],
             target_font=True,
+            target_item_center=target is not self.bet_item,
         )
 
     def sync_with_hh(self, hand_history):
