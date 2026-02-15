@@ -88,9 +88,9 @@ class TableScene(QtWidgets.QGraphicsScene):
         ] + self.side_pot_items
 
     def _create_button(self):
-        self.button_item = Image.get(Path("chips") / "dealer")
+        self.button_item = Image.get(Path("chips") / "dealer", force_png=True)
         self.button_item.setVisible(False)
-        self.button_item.setScale(config.config["look"].getfloat("button_scale"))
+        self.button_item.setScale(config.config["look"].getfloat("button_scale") * 2)
         self.addItem(self.button_item)
 
     def _create_board(self):
