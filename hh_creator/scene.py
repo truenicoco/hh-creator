@@ -13,6 +13,8 @@ from .util import Image, get_center, sounds
 
 
 class TableScene(QtWidgets.QGraphicsScene):
+    table_item: Qt.QGraphicsSvgItem | Qt.QGraphicsPixmapItem
+
     def __init__(self, parent):
         super().__init__(parent)
         self._create_background()
@@ -145,19 +147,23 @@ class TableScene(QtWidgets.QGraphicsScene):
         except FileNotFoundError:
             background = Image.get(Path("background") / "black-plain")
 
-        shadow = QtWidgets.QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(config.config["look"].getfloat("TABLE_SHADOW_RADIUS"))
-        table_item.setGraphicsEffect(shadow)
-        table_rectf = Qt.QRectF(table_item.boundingRect())
+        table_item.setGraphicsEffect(self._create_table_shadow())
+        table_rectf = Qt.QRectF(background.boundingRect())
 
         self.background_item = background
         self.background_item.setZValue(-100)
-        self.table_shadow = shadow
         self.table_item = table_item
 
         self.setSceneRect(table_rectf)
         self.addItem(background)
+        self.resize_table()
         self.addItem(table_item)
+
+    @staticmethod
+    def _create_table_shadow() -> QtWidgets.QGraphicsDropShadowEffect:
+        shadow = QtWidgets.QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(config.config["look"].getfloat("TABLE_SHADOW_RADIUS"))
+        return shadow
 
     def _place_players(self):
         self.reset_button()
@@ -166,7 +172,8 @@ class TableScene(QtWidgets.QGraphicsScene):
         log.debug("Placing players")
         self.button_position = []
         conf = config.config[f"{self.n_seats}players"]
-        center_pos = get_center(self.table_item)
+        center_pos = [960.0, 540.0]
+        # print(center_pos)
         center_pos[1] += 100
 
         for i, player in enumerate(self.player_items, start=1):
@@ -299,11 +306,28 @@ class TableScene(QtWidgets.QGraphicsScene):
     def change_table(self, color):
         config.config["look"]["table"] = color
         self.removeItem(self.table_item)
-        self.table_item.deleteLater()
+        if isinstance(self.table_item, Qt.QGraphicsSvgItem):
+            self.table_item.deleteLater()
         self.table_item = Image.get(Path("table") / color)
-        self.table_item.setGraphicsEffect(self.table_shadow)
+        self.table_item.setGraphicsEffect(self._create_table_shadow())
         self.table_item.setZValue(-50)
+        self.resize_table()
         self.addItem(self.table_item)
+
+    def resize_table(self) -> None:
+        if not isinstance(self.table_item, Qt.QGraphicsPixmapItem):
+            return
+        target_w, target_h = self.width(), self.height()
+        pixmap_w, pixmap_h = (
+            self.table_item.pixmap().width(),
+            self.table_item.pixmap().height(),
+        )
+        if pixmap_w == 0 or pixmap_h == 0:
+            return
+        scale_x = target_w / pixmap_w
+        scale_y = target_h / pixmap_h
+        scale = min(scale_x, scale_y)
+        self.table_item.setScale(scale)
 
     def change_background(self, name):
         config.config["look"]["webcam"] = name

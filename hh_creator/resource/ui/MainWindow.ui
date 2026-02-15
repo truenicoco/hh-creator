@@ -117,6 +117,9 @@
      <property name="title">
       <string>Couleur de la table</string>
      </property>
+     <addaction name="actionTableNewGreen"/>
+     <addaction name="actionTableNewBlue"/>
+     <addaction name="actionTableNewRed"/>
      <addaction name="actionTableGreen"/>
      <addaction name="actionTableBlue"/>
     </widget>
@@ -216,6 +219,21 @@
    </property>
    <property name="shortcut">
     <string>F11</string>
+   </property>
+  </action>
+  <action name="actionTableNewGreen">
+   <property name="text">
+    <string>Vert (nouveau)</string>
+   </property>
+  </action>
+  <action name="actionTableNewBlue">
+   <property name="text">
+    <string>Bleu (nouveau)</string>
+   </property>
+  </action>
+  <action name="actionTableNewRed">
+   <property name="text">
+    <string>Rouge (nouveau)</string>
    </property>
   </action>
   <action name="actionTableGreen">

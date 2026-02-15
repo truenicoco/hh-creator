@@ -327,6 +327,18 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.scene.change_table("blue")
 
     @pyqtSlot()
+    def on_actionTableNewGreen_triggered(self):
+        self.scene.change_table("new-green")
+
+    @pyqtSlot()
+    def on_actionTableNewBlue_triggered(self):
+        self.scene.change_table("new-blue")
+
+    @pyqtSlot()
+    def on_actionTableNewRed_triggered(self):
+        self.scene.change_table("new-red")
+
+    @pyqtSlot()
     def on_actionWebcamPlain_triggered(self):
         self.webcam = "plain"
         self.update_background()

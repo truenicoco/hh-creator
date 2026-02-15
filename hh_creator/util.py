@@ -56,7 +56,7 @@ class Image:
     IMG_PATH = RESOURCE_PATH / "img"
 
     @staticmethod
-    def get(filename, parent=None):
+    def get(filename, parent=None) -> Qt.QGraphicsSvgItem | Qt.QGraphicsPixmapItem:
         path = Image.IMG_PATH / f"{filename}"
         if path.with_suffix(".svg").exists():
             log.debug(f"Loading {path}")
