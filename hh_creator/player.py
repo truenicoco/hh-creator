@@ -29,7 +29,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         )
         self.action_widget = ActionWidget(self, None)
         self.stack_item = StackItem()
-        self.name_item = NameItem()
+        self.name_item = NameItem(weight=75, point_size=20)
 
         self._adjust_positions()
         self._place_cards()

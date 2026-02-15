@@ -126,7 +126,9 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 class StackItem(QtWidgets.QGraphicsItemGroup):
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
-        self.stack_item = TextItem(hide_if_empty=False, content_is_number=True)
+        self.stack_item = TextItem(
+            hide_if_empty=False, content_is_number=True, color="yellow"
+        )
         self.action_item = TextItem()
         self.addToGroup(self.stack_item)
         self.addToGroup(self.action_item)
