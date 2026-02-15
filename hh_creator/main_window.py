@@ -379,6 +379,18 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.update_background()
 
     @pyqtSlot()
+    def on_actionBackRedNew1_triggered(self):
+        CardLook.change_back("red-new1")
+
+    @pyqtSlot()
+    def on_actionBackRedNew2_triggered(self):
+        CardLook.change_back("red-new2")
+
+    @pyqtSlot()
+    def on_actionBackRedNew3_triggered(self):
+        CardLook.change_back("red-new3")
+
+    @pyqtSlot()
     def on_actionBackBlue_triggered(self):
         CardLook.change_back("blue")
 

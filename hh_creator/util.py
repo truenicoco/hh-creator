@@ -1,7 +1,8 @@
 import logging
 from decimal import Decimal, InvalidOperation
 from enum import Enum
-from functools import total_ordering
+from functools import lru_cache, total_ordering
+from pathlib import Path
 
 from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
 
@@ -56,18 +57,25 @@ class Image:
     IMG_PATH = RESOURCE_PATH / "img"
 
     @staticmethod
-    def get(filename, parent=None) -> Qt.QGraphicsSvgItem | Qt.QGraphicsPixmapItem:
+    def get(
+        filename: str, force_png: bool = False
+    ) -> Qt.QGraphicsSvgItem | Qt.QGraphicsPixmapItem:
         path = Image.IMG_PATH / f"{filename}"
-        if path.with_suffix(".svg").exists():
+        if path.with_suffix(".svg").exists() and not force_png:
             log.debug(f"Loading {path}")
-            item = Qt.QGraphicsSvgItem(str(path.with_suffix(".svg")), parent)
+            item = Qt.QGraphicsSvgItem(str(path.with_suffix(".svg")), parent=None)
             return item
         elif path.with_suffix(".png").exists():
             log.debug(f"Loading {path}")
-            img = QtGui.QPixmap(str(path.with_suffix(".png")), parent)
-            return Qt.QGraphicsPixmapItem(img)
+            img = Image._get_pixmap(path)
+            return Qt.QGraphicsPixmapItem(img, parent=None)
         else:
-            raise FileNotFoundError
+            raise FileNotFoundError(path)
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _get_pixmap(path: Path) -> QtGui.QPixmap:
+        return QtGui.QPixmap(str(path.with_suffix(".png")), None)
 
 
 class AutoUI:

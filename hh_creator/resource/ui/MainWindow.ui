@@ -127,6 +127,9 @@
      <property name="title">
       <string>Dos des cartes</string>
      </property>
+     <addaction name="actionBackRedNew1"/>
+     <addaction name="actionBackRedNew2"/>
+     <addaction name="actionBackRedNew3"/>
      <addaction name="actionBackRed"/>
      <addaction name="actionBackBlue"/>
     </widget>
@@ -244,6 +247,21 @@
   <action name="actionTableBlue">
    <property name="text">
     <string>Bleu</string>
+   </property>
+  </action>
+  <action name="actionBackRedNew1">
+   <property name="text">
+    <string>Rouge (nouveau #1)</string>
+   </property>
+  </action>
+  <action name="actionBackRedNew2">
+   <property name="text">
+    <string>Rouge (nouveau #2)</string>
+   </property>
+  </action>
+  <action name="actionBackRedNew3">
+   <property name="text">
+    <string>Rouge (nouveau #3)</string>
    </property>
   </action>
   <action name="actionBackRed">

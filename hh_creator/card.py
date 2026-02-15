@@ -62,7 +62,7 @@ class Rank(PokerEnum):
 
 
 class CardLook(QtWidgets.QGraphicsItemGroup):
-    instances = []
+    instances: list["CardLook"] = []
 
     def __init__(
         self,
@@ -85,8 +85,11 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
             self.addToGroup(k)
             k.setVisible(False)
             k.setScale(scale_factor)
-        self.back = Image.get(root / "back-red")
-        self.back.setScale(scale_factor)
+        self.crop_bottom = crop_bottom
+        variant = ("back-" + config.config["look"]["card-back"]) or "back-red"
+        self.back = Image.get(root / variant)
+        self._crop_back_pixmap()
+        self._apply_back_scale_factor()
         self.scale_factor = scale_factor
         self.addToGroup(self.back)
         self.instances.append(self)
@@ -99,21 +102,38 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
         for (rank, suit), item in self.faces.items():
             item.setVisible((rank, suit) == (self._rank, self._suit))
 
+    def _apply_back_scale_factor(self) -> None:
+        mult = 1 if isinstance(self.back, Qt.QGraphicsSvgItem) else 0.5
+        self.back.setScale(self.scale_factor * mult)
+
+    def _crop_back_pixmap(self) -> None:
+        if isinstance(self.back, Qt.QGraphicsPixmapItem) and self.crop_bottom:
+            pixmap = self.back.pixmap()
+            cropped = pixmap.copy(0, 0, pixmap.width(), int(0.63 * pixmap.height()))
+            self.back.setPixmap(cropped)
+
     def boundingRect(self):
         rect_f = super().boundingRect()
         scaled = Qt.QRectF(*(x * self.scale_factor for x in rect_f.getCoords()))
         return scaled
 
     @classmethod
-    def change_back(cls, color):
+    def change_back(cls, color: str) -> None:
         config.config["look"]["card-back"] = color
         config.save_config()
         for i in cls.instances:
             visible = i.back.isVisible()
-            i.back.deleteLater()
             pos = i.back.scenePos()
-            i.back = Image.get(Path("cards") / f"back-{color}")
-            i.back.setScale(i.scale_factor)
+            scene = i.back.scene()
+            if scene is not None:
+                scene.removeItem(i.back)
+            if isinstance(i, Qt.QGraphicsSvgItem):
+                i.back.deleteLater()
+            i.back = Image.get(
+                Path("cards" + ("_cut" if i.crop_bottom else "")) / f"back-{color}"
+            )
+            i._crop_back_pixmap()
+            i._apply_back_scale_factor()
             i.back.setPos(pos)
             i.back.setVisible(visible)
             i.addToGroup(i.back)
