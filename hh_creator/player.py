@@ -25,7 +25,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             hide_if_empty=True,
             content_is_number=True,
             point_size=config.config["text"].getint("player_bet_size"),
-            color=config.config["text"].get("player_bet_color"),
+            color="yellow",
         )
         self.action_widget = ActionWidget(self, None)
         self.stack_item = StackItem()
@@ -141,6 +141,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             callbacks=[lambda: setattr(self.bet_item, "content", street_bet_amount)],
             target_font=True,
             target_item_center=target is not self.bet_item,
+            font_kwargs={"color": "yellow"},
         )
 
     def sync_with_hh(self, hand_history):

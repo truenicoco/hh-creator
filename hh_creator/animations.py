@@ -45,15 +45,19 @@ class Animations:
         callbacks=tuple(),
         target_font=False,
         target_item_center: bool = False,
+        font_kwargs: dict | None = None,
     ):
         # print(f"Animating {source} to {target}")
         if content is None:
             content = source.content
 
+        if font_kwargs is None:
+            font_kwargs = {}
+
         if target_font:
-            font_kwargs = target.font_kwargs()
+            font_kwargs = target.font_kwargs() | font_kwargs
         else:
-            font_kwargs = source.font_kwargs()
+            font_kwargs = source.font_kwargs() | font_kwargs
 
         item_to_animate = TextItem(
             hide_if_empty=source.hide_if_empty,
