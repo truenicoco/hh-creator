@@ -4,8 +4,12 @@ from pathlib import Path
 from typing import Union
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtWidgets import (
+    QDialog,
+    QMessageBox,
+    QVBoxLayout,
+)
 
 from . import config
 from .animations import Animations
@@ -15,21 +19,6 @@ from .hh import HandHistory, HHJSONEncoder, Street, json_hook
 from .scene import TableScene
 from .text import TextItem
 from .util import AutoUI, IncrementableEnum, sounds
-
-
-class KeyboardShortcutsMixin:
-    def keyPressEvent(self, event: QtGui.QKeyEvent):
-        if event.key() == QtCore.Qt.Key_Escape:
-            self.close()
-        elif event.key() in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Space):
-            if self.main_window.widgets["pushButtonNext"].isEnabled():
-                self.main_window.on_pushButtonNext_clicked()
-        elif event.key() in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Backspace):
-            if self.main_window.widgets["pushButtonBack"].isEnabled():
-                self.main_window.on_pushButtonBack_clicked()
-        elif event.key() == QtCore.Qt.Key_Home:
-            if self.main_window.widgets["pushButtonStart"].isEnabled():
-                self.main_window.on_pushButtonStart_clicked()
 
 
 class MainWindow(QtWidgets.QMainWindow, AutoUI):
@@ -56,8 +45,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
     def __init__(self, show_new_hh_dialog: bool = True):
         super().__init__()
-
-        self.full_screen_widget = None
+        self.fullscreen_dialog = None
 
         self.background_color = "black"
         self.webcam = "plain"
@@ -115,9 +103,44 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.scene.request_action(self.hand_history)
 
     def _fit_scene(self):
-        g = self.graphics_view
-        g.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
-        self.scene.transform = g.transform()
+        if self.fullscreen_dialog is None:
+            view = self.graphics_view
+            view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
+        else:
+            view = self.graphics_view
+            view.resetTransform()
+
+            view.setTransformationAnchor(QtWidgets.QGraphicsView.NoAnchor)
+            view.setResizeAnchor(QtWidgets.QGraphicsView.NoAnchor)
+            view.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+            view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            view.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+            scene = self.scene
+
+            dlg = self.fullscreen_dialog
+
+            sw, sh = float(scene.width()), float(scene.height())
+            vw, vh = float(dlg.width()), float(dlg.height())
+            if sw <= 0 or sh <= 0 or vw <= 0 or vh <= 0:
+                return
+
+            sx = vw / sw
+            sy = vh / sh
+            s = min(sx, sy)
+
+            view.scale(s, s)
+            disp_w = sw * s
+            disp_h = sh * s
+            offset_x = (vw - disp_w) / 2.0
+            offset_y = (vh - disp_h) / 2.0
+
+            view.setSceneRect(0, 0, sw, sh)
+            view.translate(offset_x / s, offset_y / s)
+
+        self.scene.transform = view.transform()
 
     def resizeEvent(self, event: QtGui.QResizeEvent):
         self._fit_scene()
@@ -314,9 +337,32 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
     @pyqtSlot()
     def on_actionFullScreen_triggered(self):
-        log.debug("Toggling full screen")
-        self.checkBoxEditMode.setChecked(False)
-        self.full_screen_widget = FullScreenView(main_window=self, scene=self.scene)
+        self.enter_fullscreen()
+
+    def enter_fullscreen(self):
+        if self.fullscreen_dialog is None:
+            log.info("Entering full screen")
+            self.checkBoxEditMode.setChecked(False)
+            self.fullscreen_dialog = FullscreenDialog(self.graphics_view, parent=self)
+            self.fullscreen_dialog.resizeEvent = self.resizeEvent
+            screen = QtWidgets.QApplication.primaryScreen()
+            available = screen.availableGeometry()  # excludes taskbar / OS panels
+            self.fullscreen_dialog.setGeometry(available)
+            self.fullscreen_dialog.showFullScreen()
+            self._fit_scene()
+
+    def exit_fullscreen(self):
+        # Restore view back to main window layout
+        log.info("Exiting full screen")
+        dlg = self.fullscreen_dialog
+        if dlg is not None:
+            dlg.hide()
+            self.graphics_view.setParent(self.centralWidget())
+            self.centralWidget().layout().insertWidget(0, self.graphics_view)
+            dlg.deleteLater()
+            self.fullscreen_dialog = None
+        self.fullscreen_dialog = None
+        self._fit_scene()
 
     @pyqtSlot()
     def on_actionTableGreen_triggered(self):
@@ -562,49 +608,36 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             msg.exec_()
 
 
-class FullScreenView(QtWidgets.QGraphicsView, KeyboardShortcutsMixin):
-    def __init__(self, main_window: MainWindow, scene: TableScene):
-        super().__init__()
-        self.setInteractive(False)
-        self.setWindowFlag(QtCore.Qt.Window)
+class FullscreenDialog(QDialog):
+    def __init__(self, view, parent: MainWindow):
+        super().__init__(parent)
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        self.setWindowState(Qt.WindowFullScreen)
+        self.setFocusPolicy(Qt.StrongFocus)
+        self.setFocus()
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(view)
+        self.view = view
+        self.main_window = parent
 
-        if main_window.actionOpenGL.isChecked():
-            self.setViewport(QtWidgets.QOpenGLWidget())
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
+        if event.key() == QtCore.Qt.Key_Escape:
+            self.close()
+            self.main_window.exit_fullscreen()
+        elif event.key() in (QtCore.Qt.Key_Right, QtCore.Qt.Key_Space):
+            if self.main_window.widgets["pushButtonNext"].isEnabled():
+                self.main_window.on_pushButtonNext_clicked()
+        elif event.key() in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Backspace):
+            if self.main_window.widgets["pushButtonBack"].isEnabled():
+                self.main_window.on_pushButtonBack_clicked()
+        elif event.key() == QtCore.Qt.Key_Home:
+            if self.main_window.widgets["pushButtonStart"].isEnabled():
+                self.main_window.on_pushButtonStart_clicked()
 
-        self.setRenderHint(QtGui.QPainter.HighQualityAntialiasing, True)
-        self.setRenderHint(QtGui.QPainter.SmoothPixmapTransform, True)
-        self.setRenderHint(QtGui.QPainter.Antialiasing, True)
-        self.setRenderHint(QtGui.QPainter.LosslessImageRendering, True)
-
-        self.setOptimizationFlag(self.DontAdjustForAntialiasing, True)
-        self.setOptimizationFlag(self.DontClipPainter, True)
-        self.setOptimizationFlag(self.DontSavePainterState, True)
-
-        self.setScene(scene)
-        self.scene = scene
-        self.main_window = main_window
-        app = QtWidgets.QApplication.instance()
-
-        try:
-            size = app.screenAt(main_window.pos()).size()
-        except AttributeError:  # sometimes it's not on any screen
-            size = app.primaryScreen().size()
-
-        self.showFullScreen()
-        self.resize(size)
-
-        xratio = size.width() / scene.sceneRect().width()
-        yratio = size.height() / scene.sceneRect().height()
-        xratio = yratio = min(xratio, yratio)
-
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        self.scale(xratio, yratio)
-
-    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
-        # prevent scrolling on the scene in full screen
-        pass
+    def closeEvent(self, event):
+        self.main_window.exit_fullscreen()
 
 
 log = logging.getLogger(__name__)

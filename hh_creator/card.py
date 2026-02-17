@@ -109,7 +109,7 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
     def _crop_back_pixmap(self) -> None:
         if isinstance(self.back, Qt.QGraphicsPixmapItem) and self.crop_bottom:
             pixmap = self.back.pixmap()
-            cropped = pixmap.copy(0, 0, pixmap.width(), int(0.63 * pixmap.height()))
+            cropped = pixmap.copy(0, 0, pixmap.width(), int(0.62 * pixmap.height()))
             self.back.setPixmap(cropped)
 
     def boundingRect(self):
