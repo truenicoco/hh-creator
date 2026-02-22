@@ -18,3 +18,9 @@ def test_hu_player_order(file_name: str) -> None:
             assert first_player_for_street.position == Position.SB, action.street
         else:
             assert action.player.position == Position.BB, action.street
+
+
+@pytest.mark.parametrize("file_name", ["fold_flop.hh", "fold_preflop.hh"])
+def test_remaining_action(file_name: str) -> None:
+    hh = HandHistory.from_json((Path(__file__).parent / "fold_flop.hh").read_text())
+    assert hh.n_pseudo_actions() == 0
