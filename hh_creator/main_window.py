@@ -331,7 +331,6 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.update_buttons()
         else:
             self.graphics_view.setInteractive(False)
-            self.on_actionFullScreen_triggered()
             self.state = self.State.REPLAY
             self.on_pushButtonStart_clicked()
 
