@@ -141,12 +141,13 @@ class TableScene(QtWidgets.QGraphicsScene):
 
     def _create_background(self):
         table_item = Image.get(Path("table") / config.config["look"].get("table"))
-        webcam = config.config["look"].get("webcam")
-        if "-" not in webcam:
-            webcam = f"black-{webcam}"
+        webcam = config.config["look"].get("webcam", "plain")
+        bg_color = config.config["look"].get("background", "black")
         try:
-            background = Image.get(Path("background") / webcam)
+            background = Image.get(Path("background") / f"{bg_color}-{webcam}")
         except FileNotFoundError:
+            config.config["look"]["background"] = "black"
+            config.config["look"]["webcam"] = "plain"
             background = Image.get(Path("background") / "black-plain")
 
         table_item.setGraphicsEffect(self._create_table_shadow())
@@ -332,7 +333,9 @@ class TableScene(QtWidgets.QGraphicsScene):
         self.table_item.setScale(scale)
 
     def change_background(self, name):
-        config.config["look"]["webcam"] = name
+        bg, webcam = name.split("-")
+        config.config["look"]["background"] = bg
+        config.config["look"]["webcam"] = webcam
         self.background_item.setPixmap(Image.get(Path("background") / name).pixmap())
 
     def load_dict(self, hh_dict, hand_history):

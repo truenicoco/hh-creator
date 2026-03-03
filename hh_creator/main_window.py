@@ -22,6 +22,8 @@ from .util import AutoUI, IncrementableEnum, sounds
 
 
 class MainWindow(QtWidgets.QMainWindow, AutoUI):
+    scene: TableScene
+
     class State(IncrementableEnum):
         LAUNCH = 0
         INIT = 1
@@ -47,8 +49,8 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         super().__init__()
         self.fullscreen_dialog = None
 
-        self.background_color = "black"
-        self.webcam = "plain"
+        self.background_color = config.config["look"].get("background", "black")
+        self.webcam = config.config["look"].get("webcam", "plain")
 
         self.graphics_view: QtWidgets.QGraphicsView = self.widgets["graphicsView"]
 
@@ -593,6 +595,8 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             start.setEnabled(True)
 
     def update_background(self):
+        config.config["look"]["background"] = self.background_color
+        config.config["look"]["webcam"] = self.webcam
         file_name = f"{self.background_color}-{self.webcam}"
         try:
             self.scene.change_background(file_name)
