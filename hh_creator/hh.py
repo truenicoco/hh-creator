@@ -16,6 +16,7 @@ class Position(PokerEnum):
     UTG2 = "UTG2", "utg+2", "utg + 2"
     UTG3 = "UTG3", "utg+3", "utg + 3"
     UTG4 = "UTG4", "utg+4", "utg + 4"
+    LJ = "LJ", "lowjack"
     HJ = "HJ", "hijack", "utg+5", "utg + 5"
     CO = "CO", "cutoff", "cut off"
     BTN = "BTN", "bu", "button"
@@ -28,12 +29,12 @@ POSITIONS = {
     3: [Position.SB, Position.BB, Position.BTN],
     4: [Position.SB, Position.BB, Position.UTG, Position.BTN],
     5: [Position.SB, Position.BB, Position.UTG, Position.CO, Position.BTN],
-    6: [Position.SB, Position.BB, Position.UTG, Position.HJ, Position.CO, Position.BTN],
+    6: [Position.SB, Position.BB, Position.LJ, Position.HJ, Position.CO, Position.BTN],
     7: [
         Position.SB,
         Position.BB,
         Position.UTG,
-        Position.UTG1,
+        Position.LJ,
         Position.HJ,
         Position.CO,
         Position.BTN,
@@ -43,7 +44,7 @@ POSITIONS = {
         Position.BB,
         Position.UTG,
         Position.UTG1,
-        Position.UTG2,
+        Position.LJ,
         Position.HJ,
         Position.CO,
         Position.BTN,
@@ -54,7 +55,7 @@ POSITIONS = {
         Position.UTG,
         Position.UTG1,
         Position.UTG2,
-        Position.UTG3,
+        Position.LJ,
         Position.HJ,
         Position.CO,
         Position.BTN,
@@ -66,7 +67,7 @@ POSITIONS = {
         Position.UTG1,
         Position.UTG2,
         Position.UTG3,
-        Position.UTG4,
+        Position.LJ,
         Position.HJ,
         Position.CO,
         Position.BTN,
