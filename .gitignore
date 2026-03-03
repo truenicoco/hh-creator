@@ -8,3 +8,5 @@ artifacts/
 .venv/
 requirements.txt
 .python-version
+junk
+.gram
