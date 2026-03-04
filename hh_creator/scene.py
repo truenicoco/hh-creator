@@ -333,7 +333,15 @@ class TableScene(QtWidgets.QGraphicsScene):
         self.table_item.setScale(scale)
 
     def change_background(self, name):
-        bg, webcam = name.split("-")
+        try:
+            bg, webcam = name.split("-")
+        except ValueError:
+            # workaround for bogus values in config in previous version
+            log.warning(
+                "Invalid value for background: %s, resetting to black-plain", name
+            )
+            bg = "black"
+            webcam = "plain"
         config.config["look"]["background"] = bg
         config.config["look"]["webcam"] = webcam
         self.background_item.setPixmap(Image.get(Path("background") / name).pixmap())
