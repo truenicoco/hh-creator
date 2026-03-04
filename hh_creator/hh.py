@@ -531,7 +531,7 @@ class HandHistory:
         return hh
 
     def to_json(self):
-        return json.dumps(self, cls=HHJSONEncoder)
+        return json.dumps(self, cls=HHJSONEncoder, indent=2)
 
     def to_dict(self):
         return json.loads(self.to_json(), object_hook=json_hook)

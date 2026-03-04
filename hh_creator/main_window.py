@@ -537,7 +537,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         hh_dict["currency"] = self.scene.currency
         hh_dict["currency_is_after"] = self.scene.currency_is_after
         with open(filename, "w", encoding="utf-8") as fp:
-            json.dump(hh_dict, fp, cls=HHJSONEncoder)
+            json.dump(hh_dict, fp, cls=HHJSONEncoder, indent=2)
 
     def load_hh(self, filename):
         log.info(f"Loading HH file: {filename}")
