@@ -10,17 +10,17 @@ class Animations:
     animations = []
 
     @classmethod
-    def add_callback(cls, callback):
+    def add_callback(cls, callback) -> None:
         if not cls.animations:
             raise ValueError
         cls.animations[-1].finished.connect(callback)
 
     @classmethod
-    def add(cls, animation):
+    def add(cls, animation) -> None:
         cls.animations.append(animation)
 
     @classmethod
-    def start(cls):
+    def start(cls) -> None:
         group = QtCore.QParallelAnimationGroup()
         for i, a in enumerate(cls.animations):
             if i == 0:
@@ -31,7 +31,7 @@ class Animations:
         group.start(group.DeleteWhenStopped)
 
     @classmethod
-    def reset(cls):
+    def reset(cls) -> None:
         cls.animations = []
 
     @classmethod
@@ -42,11 +42,11 @@ class Animations:
         duration: int,
         scene,
         content=None,
-        callbacks=tuple(),
+        callbacks=(),
         target_font=False,
         target_item_center: bool = False,
         font_kwargs: dict | None = None,
-    ):
+    ) -> None:
         # print(f"Animating {source} to {target}")
         if content is None:
             content = source.content

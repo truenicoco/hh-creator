@@ -26,6 +26,8 @@ dev = [
     "pre-commit>=4.5.1",
     "pyproject-pre-commit>=0.3.6",
     "pytest>=8.3.4",
+    "ruff>=0.15.0",
+    "ty>=0.0.15",
 ]
 
 [build-system]
@@ -34,5 +36,5 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 
-[tool.ruff.lint]
-extend-select = ["I"]
+# [tool.ruff.lint]
+# extend-select = ["ANN", "C4", "I", "SIM", "TRY", "UP"]

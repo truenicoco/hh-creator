@@ -13,7 +13,7 @@ from hh_creator.main_window import MainWindow
 from hh_creator.util import init_sounds
 
 
-def main():
+def main() -> None:
     parser = ArgumentParser()
 
     parser.add_argument(

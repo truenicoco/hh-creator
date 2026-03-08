@@ -3,7 +3,7 @@ import logging
 from copy import deepcopy
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import List, Union
+from typing import Union
 
 from hh_creator.util import BLINDS, ActionType, IncrementableEnum
 
@@ -76,10 +76,10 @@ POSITIONS = {
 
 
 class HandHistoryException(Exception):
-    def __init__(self, message=""):
+    def __init__(self, message="") -> None:
         self.message = message
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}: {self.message}"
 
 
@@ -102,9 +102,9 @@ class Street(IncrementableEnum):
 
 @dataclass
 class Action:
-    street: Union[Street, None] = None
+    street: Street | None = None
     player: Union["Player", None] = None
-    action_type: Union[ActionType, None] = None
+    action_type: ActionType | None = None
     amount: Decimal = Decimal("0")
     added_to_pot: Decimal = Decimal("0")
 
@@ -113,16 +113,16 @@ class Action:
 class Player:
     position: Position
     hand_history: "HandHistory"
-    actions: List[Action] = field(default_factory=list)
+    actions: list[Action] = field(default_factory=list)
     stack: Decimal = Decimal("100")
 
     def __post_init__(self):
         self.initial_stack = self.stack
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.position} ({self.stack})"
 
     def __eq__(self, other):
@@ -147,7 +147,7 @@ class Player:
             return False
         return self.actions[-1].action_type == ActionType.FOLD
 
-    def add_action(self, action):
+    def add_action(self, action) -> None:
         self.actions.append(action)
         self.stack -= action.added_to_pot
         log.debug(f"{self.position} now has {self.stack}")
@@ -178,18 +178,18 @@ class Player:
 class HandHistory:
     def __init__(
         self,
-        stacks: Union[List[Decimal], None] = None,
+        stacks: list[Decimal] | None = None,
         small_blind: Decimal = Decimal("0.5"),
         ante: Decimal = Decimal("0."),
-        big_blind: Union[Decimal, None] = None,
-        bb_ante: Union[Decimal, None] = None,
+        big_blind: Decimal | None = None,
+        bb_ante: Decimal | None = None,
         n_straddle: int = 0,
-    ):
+    ) -> None:
         self.small_blind = small_blind
         if big_blind is None:
             big_blind = 2 * small_blind
         self.big_blind = big_blind
-        self.actions: List[Action] = []
+        self.actions: list[Action] = []
         self.ante = ante
         self.bb_ante = bb_ante
 
@@ -199,17 +199,17 @@ class HandHistory:
             self.set_stacks(stacks)
 
         self.current_street = Street.ANTE
-        self.current_player: Union[Player, None] = None
+        self.current_player: Player | None = None
         self.total_pot = Decimal("0")
 
         self._blinds_posted = False
 
-        self.winner: Union[Player, None] = None
+        self.winner: Player | None = None
 
         self.n_straddle = n_straddle
         self.largest_blind = 0
 
-    def set_stacks(self, stacks: List[Decimal]):
+    def set_stacks(self, stacks: list[Decimal]) -> None:
         for stack, pos in zip(stacks, POSITIONS[len(stacks)]):
             self.players.append(
                 Player(position=pos, stack=Decimal(stack), hand_history=self)
@@ -219,7 +219,7 @@ class HandHistory:
     def is_hu(self) -> bool:
         return len(self.players) == 2
 
-    def post_blinds_and_antes(self):
+    def post_blinds_and_antes(self) -> None:
         self.current_player = self.players[0]
         if self.ante:
             for _ in range(len(self.players)):
@@ -261,7 +261,7 @@ class HandHistory:
         players = [p for p in players if not p.has_folded()]
         return players
 
-    def _next_player(self):
+    def _next_player(self) -> None:
         players = self._non_folded_players_after_current()
         if len(players) == 1:
             self.winner = players[0]
@@ -288,7 +288,7 @@ class HandHistory:
         else:
             self._next_street()
 
-    def _next_street(self):
+    def _next_street(self) -> None:
         self.current_street = self.current_street.next()
         if self.current_street == Street.SHOWDOWN:
             log.info("No more action possible, showdown time")
@@ -361,7 +361,9 @@ class HandHistory:
                 actions.append(ActionType.RAISE)
         return actions
 
-    def add_action(self, action_type: ActionType, amount: Union[None, Decimal] = None):
+    def add_action(
+        self, action_type: ActionType, amount: None | Decimal = None
+    ) -> None:
         if self._blinds_posted and action_type not in self.possible_action_types():
             raise InvalidAction
         if action_type == ActionType.BET:
@@ -409,7 +411,7 @@ class HandHistory:
             f"side_pots: {self.side_pots()}, current_street:{self.current_street}"
         )
 
-    def remove_last_action(self):
+    def remove_last_action(self) -> None:
         action = self.actions.pop()
         action.player.stack += action.added_to_pot
         action.player.actions.pop()
@@ -562,9 +564,9 @@ class SidePotPlayer:
 
 @dataclass
 class SidePot:
-    players: List[SidePotPlayer]
+    players: list[SidePotPlayer]
     amount: Decimal
-    folded: List[SidePotPlayer]
+    folded: list[SidePotPlayer]
 
     def get_player_by_position(self, position: Position):
         for p in self.players:
@@ -605,7 +607,7 @@ def json_hook(o):
 #     return "\n".join(str(el) for el in list_)
 
 
-def test():
+def test() -> None:
     logging.basicConfig(level=logging.DEBUG)
     hh = HandHistory(
         stacks=[Decimal(10), Decimal(50), Decimal(10), Decimal(10)],

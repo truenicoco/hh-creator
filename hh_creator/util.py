@@ -1,7 +1,7 @@
 import logging
 from decimal import Decimal, InvalidOperation
 from enum import Enum
-from functools import lru_cache, total_ordering
+from functools import cache, total_ordering
 from pathlib import Path
 
 from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
@@ -37,7 +37,7 @@ class IncrementableEnum(Enum):
     def prev(self):
         return self.__class__(self._value_ - 1)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._name_
 
     def __lt__(self, other):
@@ -73,7 +73,7 @@ class Image:
             raise FileNotFoundError(path)
 
     @staticmethod
-    @lru_cache(maxsize=None)
+    @cache
     def _get_pixmap(path: Path) -> QtGui.QPixmap:
         return QtGui.QPixmap(str(path.with_suffix(".png")), None)
 
@@ -81,7 +81,7 @@ class Image:
 class AutoUI:
     UI_PATH = RESOURCE_PATH / "ui"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._load_ui()
         self.widgets = {}
         i = 0
@@ -93,7 +93,7 @@ class AutoUI:
                 i += 1
             self.widgets[key] = obj
 
-    def _load_ui(self):
+    def _load_ui(self) -> None:
         uic.loadUi(self.UI_PATH / f"{type(self).__name__}.ui", self)
 
 
@@ -103,7 +103,7 @@ class AmountValidatorWithBounds(QtGui.QDoubleValidator):
     log.debug(f"Locale is {LOCALE}")
     LOCALE.setNumberOptions(QtCore.QLocale.RejectGroupSeparator)
 
-    def __init__(self, minimum=None, maximum=None, *a, **kw):
+    def __init__(self, minimum=None, maximum=None, *a, **kw) -> None:
         super().__init__(*a, **kw)
         self.setNotation(QtGui.QDoubleValidator.StandardNotation)
         self.setLocale(self.LOCALE)
@@ -114,7 +114,7 @@ class AmountValidatorWithBounds(QtGui.QDoubleValidator):
 
 
 class IntValidator(QtGui.QIntValidator):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setBottom(1)
 
@@ -142,10 +142,7 @@ def barycenter(x1, y1, x2, y2, w1=1, w2=2):
 
 
 def get_center(item, scene=False):
-    if scene:
-        pos = item.scenePos()
-    else:
-        pos = item.pos()
+    pos = item.scenePos() if scene else item.pos()
     x = pos.x()
     y = pos.y()
     rect = item.boundingRect().center()
@@ -166,7 +163,7 @@ def amount_format(x, n_decimals=3):
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]
 
 
-def init_sounds():
+def init_sounds() -> None:
     # we need to import it here or else tests cannot be played in CI:
     # ImportError: libpulse-mainloop-glib.so.0: cannot open shared object file: No such file or directory
     from PyQt5 import QtMultimedia

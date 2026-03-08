@@ -15,7 +15,7 @@ from .util import Image, get_center, sounds
 class TableScene(QtWidgets.QGraphicsScene):
     table_item: Qt.QGraphicsSvgItem | Qt.QGraphicsPixmapItem
 
-    def __init__(self, parent):
+    def __init__(self, parent) -> None:
         super().__init__(parent)
         self._create_background()
         self._create_button()
@@ -37,7 +37,7 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         self.hide_board()
 
-    def _create_text_items(self):
+    def _create_text_items(self) -> None:
         self.central_pot_item = TextItem(
             prefix=config.config["text"].get("main_pot_prefix") + " ",
             content_is_number=True,
@@ -87,13 +87,13 @@ class TableScene(QtWidgets.QGraphicsScene):
             self.central_pot_item,
         ] + self.side_pot_items
 
-    def _create_button(self):
+    def _create_button(self) -> None:
         self.button_item = Image.get(Path("chips") / "dealer", force_png=True)
         self.button_item.setVisible(False)
         self.button_item.setScale(config.config["look"].getfloat("button_scale") * 2)
         self.addItem(self.button_item)
 
-    def _create_board(self):
+    def _create_board(self) -> None:
         self.board = [
             CardItem(scale_factor=config.config["look"].getfloat("board_scale"))
             for _ in range(5)
@@ -113,7 +113,7 @@ class TableScene(QtWidgets.QGraphicsScene):
             )
             self.addItem(card)
 
-    def _update_currency(self):
+    def _update_currency(self) -> None:
         items = [self.central_pot_item, self.total_pot_item] + self.side_pot_items
         items.extend(p.stack_item.stack_item for p in self.player_items)
         items.extend(p.bet_item for p in self.player_items)
@@ -122,7 +122,7 @@ class TableScene(QtWidgets.QGraphicsScene):
             setattr(i, "currency", self._currency)
             setattr(i, "currency_is_after", self._currency_is_after)
 
-    def _get_highlight_effect(self):
+    def _get_highlight_effect(self) -> None:
         highlight_effect = QtWidgets.QGraphicsDropShadowEffect()
         highlight_effect.setColor(QtGui.QColor("white"))
         highlight_effect.setOffset(0)
@@ -139,7 +139,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         else:
             raise ValueError(f"{position} not found in {self.player_items}")
 
-    def _create_background(self):
+    def _create_background(self) -> None:
         table_item = Image.get(Path("table") / config.config["look"].get("table"))
         webcam = config.config["look"].get("webcam", "plain")
         bg_color = config.config["look"].get("background", "black")
@@ -168,7 +168,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         shadow.setBlurRadius(config.config["look"].getfloat("TABLE_SHADOW_RADIUS"))
         return shadow
 
-    def _place_players(self):
+    def _place_players(self) -> None:
         self.reset_button()
         self._clear_text()
         self.board_street = hh.Street.ANTE
@@ -249,14 +249,14 @@ class TableScene(QtWidgets.QGraphicsScene):
                 ]
             )
 
-    def _clear_text(self):
+    def _clear_text(self) -> None:
         for i in self.text_items:
             if i.content_is_number:
                 i.content = 0
             else:
                 i.content = ""
 
-    def mouseDoubleClickEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mouseDoubleClickEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         # TODO: replace this with full screen
         print(event.scenePos())
         pass
@@ -266,7 +266,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         return self._currency
 
     @currency.setter
-    def currency(self, currency):
+    def currency(self, currency) -> None:
         self._currency = currency
         self._update_currency()
 
@@ -275,7 +275,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         return self._currency_is_after
 
     @currency_is_after.setter
-    def currency_is_after(self, val):
+    def currency_is_after(self, val) -> None:
         self._currency_is_after = val
         self._update_currency()
 
@@ -292,21 +292,21 @@ class TableScene(QtWidgets.QGraphicsScene):
         return self._n_seats
 
     @n_seats.setter
-    def n_seats(self, value):
+    def n_seats(self, value) -> None:
         self._n_seats = value
         self._place_players()
         self.hide_board()
         CardItem.reset()
 
-    def set_all_stacks(self, value):
+    def set_all_stacks(self, value) -> None:
         for p in self.player_items:
             p.stack_item.stack = value
 
-    def set_n_cards(self, value):
+    def set_n_cards(self, value) -> None:
         for p in self.player_items:
             p.n_cards = value
 
-    def change_table(self, color):
+    def change_table(self, color) -> None:
         config.config["look"]["table"] = color
         self.removeItem(self.table_item)
         if isinstance(self.table_item, Qt.QGraphicsSvgItem):
@@ -346,7 +346,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         config.config["look"]["webcam"] = webcam
         self.background_item.setPixmap(Image.get(Path("background") / name).pixmap())
 
-    def load_dict(self, hh_dict, hand_history):
+    def load_dict(self, hh_dict, hand_history) -> None:
         self._clear_text()
 
         self.hero_idx = hh_dict["hero"]
@@ -408,21 +408,21 @@ class TableScene(QtWidgets.QGraphicsScene):
             players = players[::-1]
         return players
 
-    def show_all_players(self):
+    def show_all_players(self) -> None:
         for i, p in enumerate(self.player_items):
             p.setVisible(i < self.n_seats)
 
-    def hide_inactive_players(self):
+    def hide_inactive_players(self) -> None:
         for p in self.player_items:
             if not p.active:
                 p.setVisible(False)
 
-    def reset_button(self):
+    def reset_button(self) -> None:
         for p in self.player_items:
             p.has_button = False
         self.button_item.setVisible(False)
 
-    def give_button(self, player):
+    def give_button(self, player) -> None:
         self.reset_button()
         player.has_button = True
         i = self.player_items.index(player)
@@ -432,7 +432,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         self.button_item.setPos(*pos)
         self.parent().update_buttons()
 
-    def bets_to_pot_animations(self, hand_history, add_last_call=True):
+    def bets_to_pot_animations(self, hand_history, add_last_call=True) -> None:
         log.info("Animating bets to pot")
         last_action = hand_history.last_action
         if add_last_call and last_action.action_type == hh.ActionType.CALL:
@@ -472,7 +472,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         position: hh.Position,
         pot_item=None,
         split=1,
-    ):
+    ) -> None:
         player_item = self._get_player_item_from_hh_position(position)
 
         if pot_item is None:
@@ -509,7 +509,7 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         # print(amount)
 
-    def ante_animations(self, hand_history: hh.HandHistory):
+    def ante_animations(self, hand_history: hh.HandHistory) -> None:
         for i, p in enumerate(self.active_players()):
             Animations.text(
                 source=p.stack_item.stack_item,
@@ -521,7 +521,7 @@ class TableScene(QtWidgets.QGraphicsScene):
                 scene=self,
             )
 
-    def bb_ante_animation(self, hand_history: hh.HandHistory):
+    def bb_ante_animation(self, hand_history: hh.HandHistory) -> None:
         Animations.text(
             source=self.bb_player().stack_item.stack_item,
             content=hand_history.bb_ante,
@@ -532,11 +532,11 @@ class TableScene(QtWidgets.QGraphicsScene):
             scene=self,
         )
 
-    def clear_side_pots(self):
+    def clear_side_pots(self) -> None:
         for pot_item in [self.central_pot_item] + self.side_pot_items:
             pot_item.content = 0
 
-    def show_down(self, hand_history):
+    def show_down(self, hand_history) -> None:
         for side_pot, side_pot_item in zip(
             hand_history.side_pots(), [self.central_pot_item] + self.side_pot_items
         ):
@@ -556,11 +556,11 @@ class TableScene(QtWidgets.QGraphicsScene):
                     w.hh_position, side_pot_item, split=len(winners)
                 )
 
-    def clear_bet_items(self):
+    def clear_bet_items(self) -> None:
         for p in self.player_items:
             p.bet_item.content = 0
 
-    def update_winners(self, hand_history):
+    def update_winners(self, hand_history) -> None:
         Animations.reset()
         self.show_known_hands()
         if hand_history.winner is None:
@@ -572,7 +572,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         self._clear_text()
         Animations.start()
 
-    def update_total_pot(self, hand_history):
+    def update_total_pot(self, hand_history) -> None:
         central_pot = hand_history.central_pot
         total_pot = hand_history.total_pot
 
@@ -581,7 +581,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         else:
             self.total_pot_item.content = 0
 
-    def sync_with_hh(self, hand_history, rebuild_pots=False, update_board=True):
+    def sync_with_hh(self, hand_history, rebuild_pots=False, update_board=True) -> None:
         log.debug("Syncing table with HH")
 
         Animations.reset()
@@ -688,34 +688,34 @@ class TableScene(QtWidgets.QGraphicsScene):
 
         Animations.start()
 
-    def show_known_hands(self):
+    def show_known_hands(self) -> None:
         for p in self.active_players():
             for c in p.card_items:
                 c.discover()
 
-    def hide_hands(self, hide_hero=False):
+    def hide_hands(self, hide_hero=False) -> None:
         for i, p in enumerate(self.active_players()):
             if not hide_hero and i == self.hero_idx:
                 continue
             for c in p.card_items:
                 c.hide_face()
 
-    def hide_board(self):
+    def hide_board(self) -> None:
         for c in self.board:
             c.setVisible(False)
 
-    def show_flop(self):
+    def show_flop(self) -> None:
         for c in self.board[:3]:
             c.setVisible(True)
         for c in self.board[3:]:
             c.setVisible(False)
 
-    def show_turn(self):
+    def show_turn(self) -> None:
         for c in self.board[:4]:
             c.setVisible(True)
         self.board[4].setVisible(False)
 
-    def show_river(self):
+    def show_river(self) -> None:
         for c in self.board:
             c.setVisible(True)
 
@@ -730,15 +730,15 @@ class TableScene(QtWidgets.QGraphicsScene):
             if p.hh_position == hh.Position.BB:
                 return p
 
-    def reset_bet_items(self):
+    def reset_bet_items(self) -> None:
         for p in self.active_players():
             p.bet_item.content = 0
 
-    def hide_all_actions_widget(self):
+    def hide_all_actions_widget(self) -> None:
         for p in self.player_items:
             p.hide_actions_widget()
 
-    def request_action(self, hand_history: hh.HandHistory):
+    def request_action(self, hand_history: hh.HandHistory) -> None:
         self.sync_with_hh(hand_history)
         self.hide_all_actions_widget()
         next_hh_player = hand_history.current_player
@@ -749,7 +749,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         )
         next_player_item.show_actions_widget(hand_history)
 
-    def init_hh(self, hand_history: hh.HandHistory):
+    def init_hh(self, hand_history: hh.HandHistory) -> None:
         players = self.get_active_players_after_button()
         hand_history.set_stacks([p.stack_item.stack for p in players])
         for p, hhp in zip(players, hand_history.players):
@@ -761,7 +761,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         self.request_action(hand_history)
         self.hide_inactive_players()
 
-    def show_all_active_players_cards(self):
+    def show_all_active_players_cards(self) -> None:
         for p in self.active_players():
             p.show_cards()
 

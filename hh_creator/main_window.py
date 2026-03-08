@@ -1,7 +1,6 @@
 import json
 import logging
 from pathlib import Path
-from typing import Union
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -45,7 +44,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         State.WAIT_FOR_RIVER: "Suivant = afficher river",
     }
 
-    def __init__(self, show_new_hh_dialog: bool = True):
+    def __init__(self, show_new_hh_dialog: bool = True) -> None:
         super().__init__()
         self.fullscreen_dialog = None
 
@@ -54,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
         self.graphics_view: QtWidgets.QGraphicsView = self.widgets["graphicsView"]
 
-        self.hand_history: Union[None, HandHistory] = None
+        self.hand_history: None | HandHistory = None
         self.hh_settings = {}
 
         if config.config["behavior"].getboolean("replay_start_with_blinds_posted"):
@@ -78,14 +77,14 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         if show_new_hh_dialog:
             self.on_actionNew_triggered()
 
-    def _make_table_scene(self):
+    def _make_table_scene(self) -> None:
         table_scene = TableScene(self)
         self.scene = table_scene
         if self.actionOpenGL.isChecked():
             self.graphics_view.setViewport(QtWidgets.QOpenGLWidget())
         self.graphics_view.setScene(table_scene)
 
-    def _initialize_hh(self):
+    def _initialize_hh(self) -> None:
         player_items = self.scene.get_active_players_after_button()
         stacks = [p.stack_item.stack for p in player_items]
         hand_history = HandHistory(
@@ -104,7 +103,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.scene.sync_with_hh(self.hand_history)
         self.scene.request_action(self.hand_history)
 
-    def _fit_scene(self):
+    def _fit_scene(self) -> None:
         if self.fullscreen_dialog is None:
             view = self.graphics_view
             view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
@@ -144,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
         self.scene.transform = view.transform()
 
-    def resizeEvent(self, event: QtGui.QResizeEvent):
+    def resizeEvent(self, event: QtGui.QResizeEvent) -> None:
         self._fit_scene()
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
@@ -156,12 +155,12 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         return self._state
 
     @state.setter
-    def state(self, v):
+    def state(self, v) -> None:
         self._state = v
         self.statusBar().showMessage(self.STATUS_MESSAGES[v])
 
     @pyqtSlot()
-    def on_actionNew_triggered(self):
+    def on_actionNew_triggered(self) -> None:
         dialog = NewHandDialog(parent=self)
         code = dialog.exec()
         if code:
@@ -196,10 +195,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
             conf = dialog.conf
             for name, field in dialog.FIELDS.items():
-                if name == "Stack":
-                    conf_name = "default_stack_in_bb"
-                else:
-                    conf_name = name
+                conf_name = "default_stack_in_bb" if name == "Stack" else name
                 conf[conf_name] = config.escape_dollar(dialog.get_field_value(name))
                 if field.checkable:
                     conf[f"{name}_checked"] = str(
@@ -214,7 +210,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.update_buttons()
 
     @pyqtSlot()
-    def on_pushButtonNext_clicked(self):
+    def on_pushButtonNext_clicked(self) -> None:
         if self.state == self.State.INIT:
             self.scene.init_hh(self.hand_history)
             self.state = self.state.next()
@@ -275,7 +271,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.update_buttons()
 
     @pyqtSlot()
-    def on_pushButtonBack_clicked(self):
+    def on_pushButtonBack_clicked(self) -> None:
         if self.state == self.State.ACTIONS:
             self.hand_history.remove_last_action()
             self.scene.request_action(self.hand_history)
@@ -312,7 +308,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.update_buttons()
 
     @pyqtSlot()
-    def on_pushButtonStart_clicked(self):
+    def on_pushButtonStart_clicked(self) -> None:
         self.replay_action_cursor = -1
         hand_history = self.hand_history.at_action(self.replay_action_cursor)
         self.checkBoxEditMode.setChecked(False)
@@ -323,7 +319,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.update_buttons()
 
     @pyqtSlot(bool)
-    def on_checkBoxEditMode_toggled(self, checked):
+    def on_checkBoxEditMode_toggled(self, checked) -> None:
         if checked:
             if self.state == self.State.INIT:
                 return
@@ -338,10 +334,10 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.on_pushButtonStart_clicked()
 
     @pyqtSlot()
-    def on_actionFullScreen_triggered(self):
+    def on_actionFullScreen_triggered(self) -> None:
         self.enter_fullscreen()
 
-    def enter_fullscreen(self):
+    def enter_fullscreen(self) -> None:
         if self.fullscreen_dialog is None:
             log.info("Entering full screen")
             self.checkBoxEditMode.setChecked(False)
@@ -353,7 +349,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.fullscreen_dialog.showFullScreen()
             self._fit_scene()
 
-    def exit_fullscreen(self):
+    def exit_fullscreen(self) -> None:
         # Restore view back to main window layout
         log.info("Exiting full screen")
         dlg = self.fullscreen_dialog
@@ -367,96 +363,96 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self._fit_scene()
 
     @pyqtSlot()
-    def on_actionTableGreen_triggered(self):
+    def on_actionTableGreen_triggered(self) -> None:
         self.scene.change_table("green")
 
     @pyqtSlot()
-    def on_actionTableBlue_triggered(self):
+    def on_actionTableBlue_triggered(self) -> None:
         self.scene.change_table("blue")
 
     @pyqtSlot()
-    def on_actionTableNewGreen_triggered(self):
+    def on_actionTableNewGreen_triggered(self) -> None:
         self.scene.change_table("new-green")
 
     @pyqtSlot()
-    def on_actionTableNewBlue_triggered(self):
+    def on_actionTableNewBlue_triggered(self) -> None:
         self.scene.change_table("new-blue")
 
     @pyqtSlot()
-    def on_actionTableNewRed_triggered(self):
+    def on_actionTableNewRed_triggered(self) -> None:
         self.scene.change_table("new-red")
 
     @pyqtSlot()
-    def on_actionWebcamPlain_triggered(self):
+    def on_actionWebcamPlain_triggered(self) -> None:
         self.webcam = "plain"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionWebcamBoth_triggered(self):
+    def on_actionWebcamBoth_triggered(self) -> None:
         self.webcam = "both"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionWebcamLeft_triggered(self):
+    def on_actionWebcamLeft_triggered(self) -> None:
         self.webcam = "left"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionWebcamRight_triggered(self):
+    def on_actionWebcamRight_triggered(self) -> None:
         self.webcam = "right"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionBackgroundBlack_triggered(self):
+    def on_actionBackgroundBlack_triggered(self) -> None:
         self.background_color = "black"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionBackgroundViolet_triggered(self):
+    def on_actionBackgroundViolet_triggered(self) -> None:
         self.background_color = "violet"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionBackgroundBlue_triggered(self):
+    def on_actionBackgroundBlue_triggered(self) -> None:
         self.background_color = "blue"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionBackgroundRed_triggered(self):
+    def on_actionBackgroundRed_triggered(self) -> None:
         self.background_color = "red"
         self.update_background()
 
     @pyqtSlot()
-    def on_actionBackRedNew1_triggered(self):
+    def on_actionBackRedNew1_triggered(self) -> None:
         CardLook.change_back("red-new1")
 
     @pyqtSlot()
-    def on_actionBackRedNew2_triggered(self):
+    def on_actionBackRedNew2_triggered(self) -> None:
         CardLook.change_back("red-new2")
 
     @pyqtSlot()
-    def on_actionBackRedNew3_triggered(self):
+    def on_actionBackRedNew3_triggered(self) -> None:
         CardLook.change_back("red-new3")
 
     @pyqtSlot()
-    def on_actionBackBlue_triggered(self):
+    def on_actionBackBlue_triggered(self) -> None:
         CardLook.change_back("blue")
 
     @pyqtSlot()
-    def on_actionBackRed_triggered(self):
+    def on_actionBackRed_triggered(self) -> None:
         CardLook.change_back("red")
 
     @pyqtSlot()
-    def on_actionQuit_triggered(self):
+    def on_actionQuit_triggered(self) -> None:
         self.close()
 
     @pyqtSlot()
-    def on_actionSave_triggered(self):
+    def on_actionSave_triggered(self) -> None:
         log.info(f"Saving to {self.current_filename}")
         self.save_hh(self.current_filename)
 
     @pyqtSlot()
-    def on_actionSaveAs_triggered(self):
+    def on_actionSaveAs_triggered(self) -> None:
         result = QtWidgets.QFileDialog.getSaveFileName(
             self,
             "Choisissez le fichier HH à écrire",
@@ -472,7 +468,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.save_hh(filename)
 
     @pyqtSlot()
-    def on_actionOpen_triggered(self):
+    def on_actionOpen_triggered(self) -> None:
         result = QtWidgets.QFileDialog.getOpenFileName(
             self,
             "Choisissez le fichier HH à charger",
@@ -488,11 +484,11 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.load_hh(filename)
 
     @pyqtSlot(bool)
-    def on_actionHideHandsBeforeShowdown_triggered(self):
+    def on_actionHideHandsBeforeShowdown_triggered(self) -> None:
         self.scene.sync_with_hh(self.hand_history)
 
     @pyqtSlot(bool)
-    def on_actionOpenGL_triggered(self, checked):
+    def on_actionOpenGL_triggered(self, checked) -> None:
         if checked:
             self.graphics_view.setViewport(QtWidgets.QOpenGLWidget())
         else:
@@ -500,7 +496,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         config.config["animation"]["opengl"] = str(checked)
 
     @pyqtSlot()
-    def on_actionRestoreConfig_triggered(self):
+    def on_actionRestoreConfig_triggered(self) -> None:
         log.info("Restoring config defaults")
         config.restore_defaults()
         self.statusBar().showMessage(
@@ -518,7 +514,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             ).isChecked()
         )
 
-    def save_hh(self, filename):
+    def save_hh(self, filename) -> None:
         hh_dict = self.hand_history.to_dict()
         hh_dict["n_decimals"] = TextItem.n_decimals
         hh_dict["player_names"] = [
@@ -539,10 +535,10 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         with open(filename, "w", encoding="utf-8") as fp:
             json.dump(hh_dict, fp, cls=HHJSONEncoder, indent=2)
 
-    def load_hh(self, filename):
+    def load_hh(self, filename) -> None:
         log.info(f"Loading HH file: {filename}")
         self.current_filename = filename
-        with open(filename, "r", encoding="utf-8") as fp:
+        with open(filename, encoding="utf-8") as fp:
             hh_dict = json.load(fp, object_hook=json_hook)
         self.hand_history = HandHistory.from_dict(hh_dict)
         self.scene.load_dict(hh_dict, self.hand_history)
@@ -556,7 +552,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         TextItem.n_decimals = n_digits
         self.pushButtonStart.clicked.emit()
 
-    def update_buttons(self):
+    def update_buttons(self) -> None:
         next_ = self.widgets["pushButtonNext"]
         back = self.widgets["pushButtonBack"]
         edit = self.widgets["checkBoxEditMode"]
@@ -595,7 +591,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
             start.setEnabled(True)
 
-    def update_background(self):
+    def update_background(self) -> None:
         config.config["look"]["background"] = self.background_color
         config.config["look"]["webcam"] = self.webcam
         file_name = f"{self.background_color}-{self.webcam}"
@@ -613,7 +609,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
 
 class FullscreenDialog(QDialog):
-    def __init__(self, view, parent: MainWindow):
+    def __init__(self, view, parent: MainWindow) -> None:
         super().__init__(parent)
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setWindowState(Qt.WindowFullScreen)
@@ -626,7 +622,7 @@ class FullscreenDialog(QDialog):
         self.view = view
         self.main_window = parent
 
-    def keyPressEvent(self, event: QtGui.QKeyEvent):
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == QtCore.Qt.Key_Escape:
             self.close()
             self.main_window.exit_fullscreen()
@@ -640,7 +636,7 @@ class FullscreenDialog(QDialog):
             if self.main_window.widgets["pushButtonStart"].isEnabled():
                 self.main_window.on_pushButtonStart_clicked()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         self.main_window.exit_fullscreen()
 
 

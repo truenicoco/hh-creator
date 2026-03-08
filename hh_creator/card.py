@@ -1,9 +1,10 @@
+import contextlib
 import itertools
 import logging
 from dataclasses import dataclass
 from functools import total_ordering
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING
 
 from deuces import Card as DeucesCard
 from deuces import Evaluator
@@ -70,7 +71,7 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
         crop_bottom=False,
         *a,
         **kw,
-    ):
+    ) -> None:
         root = Path("cards_cut") if crop_bottom else Path("cards")
         super().__init__(*a, **kw)
         self.scale_factor = scale_factor
@@ -94,7 +95,7 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
         self.addToGroup(self.back)
         self.instances.append(self)
 
-    def _update_look(self):
+    def _update_look(self) -> None:
         if self._rank is None or self._suit is None:
             self.back.setVisible(True)
             return
@@ -138,19 +139,19 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
             i.back.setVisible(visible)
             i.addToGroup(i.back)
 
-    def hide_face(self):
+    def hide_face(self) -> None:
         self.back.setVisible(True)
 
-    def discover(self):
+    def discover(self) -> None:
         if self._rank is not None and self._suit is not None:
             self.back.setVisible(False)
 
 
 class CardItem(CardLook):
-    def __init__(self, *a, **kw):
+    def __init__(self, *a, **kw) -> None:
         super().__init__(*a, **kw)
-        self._suit: Union[Suit, None] = None
-        self._rank: Union[Rank, None] = None
+        self._suit: Suit | None = None
+        self._rank: Rank | None = None
         self._update_look()
 
     @property
@@ -158,7 +159,7 @@ class CardItem(CardLook):
         return self._suit
 
     @suit.setter
-    def suit(self, suit):
+    def suit(self, suit) -> None:
         self._suit = suit
         self._update_look()
 
@@ -167,23 +168,21 @@ class CardItem(CardLook):
         return self._rank
 
     @rank.setter
-    def rank(self, rank):
+    def rank(self, rank) -> None:
         self._rank = rank
         self._update_look()
 
-    def wheelEvent(self, event: QtWidgets.QGraphicsSceneWheelEvent):
+    def wheelEvent(self, event: QtWidgets.QGraphicsSceneWheelEvent) -> None:
         log.debug("Wheel on card")
         mw = self.scene().parent()
         if mw.state != mw.State.ACTIONS:
             return
         if self.rank is not None:
             attr = "next" if event.delta() > 0 else "prev"
-            try:
+            with contextlib.suppress(ValueError):
                 self.rank = getattr(self.rank, attr)()
-            except ValueError:
-                pass
 
-    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         mw = self.scene().parent()
         if mw.state != mw.State.ACTIONS:
             return
@@ -203,7 +202,7 @@ class CardItem(CardLook):
         else:
             self.suit = None
 
-    def contextMenuEvent(self, event: QtWidgets.QGraphicsSceneContextMenuEvent):
+    def contextMenuEvent(self, event: QtWidgets.QGraphicsSceneContextMenuEvent) -> None:
         mw = self.scene().parent()
         if mw.state != mw.State.ACTIONS:
             return
@@ -227,7 +226,7 @@ class CardItem(CardLook):
         menu.addActions(actions)
         menu.exec(event.screenPos())
 
-    def deuces_format(self):
+    def deuces_format(self) -> str | None:
         try:
             return f"{self.rank.one_letter_format()}{self.suit.one_letter_format()}"
         except AttributeError:
@@ -237,7 +236,7 @@ class CardItem(CardLook):
         return DeucesCard.new(self.deuces_format())
 
     @classmethod
-    def reset(cls):
+    def reset(cls) -> None:
         for c in cls.instances:
             c.rank = None
             c.suit = None
@@ -246,8 +245,8 @@ class CardItem(CardLook):
 @total_ordering
 @dataclass
 class Hand:
-    cards: List[CardItem]
-    board: List[CardItem]
+    cards: list[CardItem]
+    board: list[CardItem]
 
     def __gt__(self, other: "Hand"):
         return self.deuces_score() < other.deuces_score()
@@ -261,7 +260,7 @@ class Hand:
         )
 
 
-def get_winners(player_items: List["PlayerItemGroup"], board: List["CardItem"]):
+def get_winners(player_items: list["PlayerItemGroup"], board: list["CardItem"]):
     scores = []
     for player in player_items:
         if player.n_cards == 2:

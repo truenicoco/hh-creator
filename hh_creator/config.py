@@ -4,7 +4,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path
 
 
-def save_config(window_geometry=None, window_state=None):
+def save_config(window_geometry=None, window_state=None) -> None:
     log.info(f"Writing config to {config_filename}")
     with config_filename.open("w", encoding="utf-8") as fp:
         config.write(fp)
@@ -16,7 +16,7 @@ def save_config(window_geometry=None, window_state=None):
             fp.write(bytes(window_state))
 
 
-def restore_defaults():
+def restore_defaults() -> None:
     config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(RESOURCE_PATH / "default.ini", encoding="utf-8")
     with config_filename.open("w", encoding="utf-8") as fp:
