@@ -1,0 +1,53 @@
+{
+  "small_blind": { "decimal": "50" },
+  "big_blind": { "decimal": "100" },
+  "actions": [
+    { "type": "post SB", "amount": { "decimal": "50" } },
+    { "type": "post BB", "amount": { "decimal": "100" } },
+    { "type": "fold", "amount": { "decimal": "0" } },
+    { "type": "fold", "amount": { "decimal": "0" } },
+    { "type": "fold", "amount": { "decimal": "0" } },
+    { "type": "raise", "amount": { "decimal": "150" } },
+    { "type": "fold", "amount": { "decimal": "0" } },
+    { "type": "call", "amount": { "decimal": "150" } },
+    { "type": "check", "amount": { "decimal": "0" } },
+    { "type": "bet", "amount": { "decimal": "200" } },
+    { "type": "raise", "amount": { "decimal": "500" } },
+    { "type": "fold", "amount": { "decimal": "0" } }
+  ],
+  "ante": { "decimal": "0" },
+  "bb_ante": { "decimal": "0" },
+  "players": [
+    { "decimal": "10000" },
+    { "decimal": "10000" },
+    { "decimal": "10000" },
+    { "decimal": "10000" },
+    { "decimal": "10000" },
+    { "decimal": "10000" }
+  ],
+  "current_street": null,
+  "current_player": null,
+  "total_pot": { "decimal": "1450" },
+  "_blinds_posted": true,
+  "winner": { "decimal": "10000" },
+  "n_straddle": 0,
+  "largest_blind": { "decimal": "100" },
+  "n_decimals": 1,
+  "player_names": ["SB", "BB", "UTG", "HJ", "CO", "BTN"],
+  "n_seats": 6,
+  "n_cards": 2,
+  "active_seats": [0, 1, 2, 3, 4, 5],
+  "button_idx": 4,
+  "hero": 0,
+  "hands": [
+    ["xx", "xx", "xx", "xx"],
+    ["7h", "8h", "xx", "xx"],
+    ["xx", "xx", "xx", "xx"],
+    ["xx", "xx", "xx", "xx"],
+    ["xx", "xx", "xx", "xx"],
+    ["xx", "xx", "xx", "xx"]
+  ],
+  "board": ["4h", "5h", "Td", "xx", "xx"],
+  "currency": "",
+  "currency_is_after": true
+}
