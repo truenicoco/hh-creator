@@ -341,7 +341,7 @@ class HandHistory:
         return res
 
     @property
-    def last_action(self):
+    def last_action(self) -> Action | None:
         if self.actions:
             return self.actions[-1]
 
@@ -552,7 +552,13 @@ class HandHistory:
         return Street.RIVER - self.last_action.street
 
     def play_length(self):
-        return 2 + len(self.editable_actions()) + self.n_pseudo_actions()
+        return 1 + len(self.editable_actions()) + self.n_pseudo_actions()
+
+    @property
+    def went_to_showdown(self) -> bool:
+        if self.last_action:
+            return self.last_action.action_type != ActionType.FOLD
+        return False
 
 
 @dataclass

@@ -1,9 +1,10 @@
 import json
 import logging
+from functools import partial
 from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog,
     QMessageBox,
@@ -215,6 +216,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             self.scene.init_hh(self.hand_history)
             self.state = self.state.next()
         elif self.state == self.State.REPLAY:
+            assert isinstance(self.hand_history, HandHistory)
             self.replay_action_cursor += 1
             if self.replay_action_cursor > len(self.hand_history.editable_actions()):
                 # = action closes before river but showdown is possible, eg, multiple allins preflop
@@ -230,19 +232,27 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     self.scene.update_total_pot(self.hand_history)
                     Animations.start()
                 play_len = self.hand_history.play_length()
-                if self.replay_action_cursor == play_len - 4:
-                    self.scene.show_known_hands()
-                elif self.replay_action_cursor == play_len - 3:
-                    sounds["street"].play()
-                    self.scene.show_flop()
-                elif self.replay_action_cursor == play_len - 2:
-                    self.scene.show_turn()
-                    sounds["street"].play()
-                elif self.replay_action_cursor == play_len - 1:
-                    self.scene.show_river()
-                    sounds["street"].play()
+                if self.hand_history.went_to_showdown:
+                    if self.replay_action_cursor == play_len - 4:
+                        self.scene.show_known_hands()
+                    elif self.replay_action_cursor == play_len - 3:
+                        sounds["street"].play()
+                        self.scene.show_flop()
+                    elif self.replay_action_cursor == play_len - 2:
+                        self.scene.show_turn()
+                        sounds["street"].play()
+                    elif self.replay_action_cursor == play_len - 1:
+                        self.scene.show_river()
+                        sounds["street"].play()
+                    else:
+                        self.scene.update_winners(self.hand_history)
                 else:
-                    self.scene.update_winners(self.hand_history)
+                    QTimer.singleShot(
+                        config.config["animation"].getint(
+                            "BETS_TO_POT_ANIMATION_DURATION"
+                        ),
+                        partial(self.scene.update_winners, self.hand_history),
+                    )
             else:
                 hand_history = self.hand_history.at_action(self.replay_action_cursor)
                 self.scene.sync_with_hh(hand_history, update_board=False)
