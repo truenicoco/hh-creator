@@ -69,7 +69,7 @@ jobs:
     - name: Check what artifacts have been downloaded
       run: |
         ls -la
-        ls -la ${{ env.ARTIFACT_PREFIX }}
+        ls -la ${{ env.ARTIFACT_PREFIX }}-windows
     - uses: vimtor/action-zip@v1.2
       with:
         files: ${{ env.ARTIFACT_PREFIX }}-windows
