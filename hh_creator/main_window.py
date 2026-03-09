@@ -233,20 +233,20 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
                     Animations.start()
                 play_len = self.hand_history.play_length()
                 if self.hand_history.went_to_showdown:
+                    sounds["street"].play()
                     if self.replay_action_cursor == play_len - 4:
                         self.scene.show_known_hands()
                     elif self.replay_action_cursor == play_len - 3:
-                        sounds["street"].play()
                         self.scene.show_flop()
                     elif self.replay_action_cursor == play_len - 2:
                         self.scene.show_turn()
-                        sounds["street"].play()
                     elif self.replay_action_cursor == play_len - 1:
                         self.scene.show_river()
-                        sounds["street"].play()
                     else:
+                        sounds["call_closing"].play()
                         self.scene.update_winners(self.hand_history)
                 else:
+                    sounds["call_closing"].play()
                     QTimer.singleShot(
                         config.config["animation"].getint(
                             "BETS_TO_POT_ANIMATION_DURATION"

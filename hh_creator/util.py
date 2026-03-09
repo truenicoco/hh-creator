@@ -179,6 +179,7 @@ def init_sounds() -> None:
             ActionType.BB: _sounds["bet"],
             ActionType.ANTE: _sounds["bet"],
             ActionType.STRADDLE: _sounds["bet"],
+            # "win": _sounds["bet"],
             "street": _sounds["street"],
             "call_closing": _sounds["call_closing"],
         }
