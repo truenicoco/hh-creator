@@ -4,7 +4,7 @@ from enum import Enum
 from functools import cache, total_ordering
 from pathlib import Path
 
-from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
+from PyQt5 import Qt, QtGui, QtWidgets, uic
 
 from .config import RESOURCE_PATH
 from .poker_enum import PokerEnum
@@ -99,14 +99,10 @@ class AutoUI:
 
 class AmountValidatorWithBounds(QtGui.QDoubleValidator):
     # Forbid "," that Decimal() does not like.
-    LOCALE = QtCore.QLocale()
-    log.debug(f"Locale is {LOCALE}")
-    LOCALE.setNumberOptions(QtCore.QLocale.RejectGroupSeparator)
 
     def __init__(self, minimum=None, maximum=None, *a, **kw) -> None:
         super().__init__(*a, **kw)
-        self.setNotation(QtGui.QDoubleValidator.StandardNotation)
-        self.setLocale(self.LOCALE)
+
         if minimum is not None:
             self.setBottom(minimum)
         if maximum is not None:

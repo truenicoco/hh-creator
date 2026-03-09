@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, QLocale
 
 from . import config, hh
 from .util import AutoUI, amount_validator, decimal_conversion
@@ -204,10 +204,12 @@ class NameDialog(QtWidgets.QDialog, AutoUI):
 
 
 class StackDialog(QtWidgets.QDialog, AutoUI):
-    def __init__(self, parent, value) -> None:
+    def __init__(self, parent, value: Decimal) -> None:
         super().__init__(parent)
         self.line_edit: QtWidgets.QLineEdit = self.widgets["lineEdit"]
-        self.line_edit.setText(str(value))
+        self.line_edit.setText(
+            QLocale().toString(float(value), "f", abs(value.as_tuple().exponent))
+        )
         self.line_edit.setValidator(amount_validator)
         self.line_edit.selectAll()
         self.show()
