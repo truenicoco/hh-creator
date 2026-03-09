@@ -1,6 +1,6 @@
+import contextlib
 import logging
 from decimal import Decimal
-from typing import Union
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -13,7 +13,7 @@ from .util import Image
 
 
 class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
-    def __init__(self, id, n_cards=4, *a, **kw):
+    def __init__(self, id, n_cards=4, *a, **kw) -> None:
         super().__init__(*a, **kw)
 
         self.card_items = []
@@ -25,11 +25,11 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             hide_if_empty=True,
             content_is_number=True,
             point_size=config.config["text"].getint("player_bet_size"),
-            color=config.config["text"].get("player_bet_color"),
+            color="yellow",
         )
         self.action_widget = ActionWidget(self, None)
         self.stack_item = StackItem()
-        self.name_item = NameItem()
+        self.name_item = NameItem(weight=75, point_size=20)
 
         self._adjust_positions()
         self._place_cards()
@@ -37,7 +37,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         self.id = id
         self.active = True
         self.has_button = False
-        self.hh_position: Union[None, hh.Position] = None
+        self.hh_position: None | hh.Position = None
 
         self.addToGroup(self.bet_item)
         self.addToGroup(self.seat_item)
@@ -45,7 +45,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         self.addToGroup(self.stack_item)
         self.addToGroup(self.action_widget_item)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<PlayerItemGroup #{self.id}: {self.name_item.content} {self.hh_position}>"
         )
@@ -55,7 +55,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         return self._n_cards
 
     @n_cards.setter
-    def n_cards(self, n):
+    def n_cards(self, n) -> None:
         self._n_cards = n
         self._place_cards()
 
@@ -71,7 +71,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             log.debug(f"Passing event to {group}")
             return group
 
-    def _place_cards(self):
+    def _place_cards(self) -> None:
         seat_rect = self.seat_item.boundingRect()
 
         cards_width = self.card_items[0].boundingRect().width() + 60 * (
@@ -81,7 +81,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             card.setPos(seat_rect.width() / 2 - cards_width / 2 + 60 * i, -91)
             card.setVisible(i < self.n_cards)
 
-    def _adjust_positions(self):
+    def _adjust_positions(self) -> None:
         log.debug("Positioning player items")
         self.seat_item = Image.get("seat")
         self.seat_item.setPos(0, 0)
@@ -110,14 +110,14 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         return self._active
 
     @active.setter
-    def active(self, active):
+    def active(self, active) -> None:
         if active:
             self.setOpacity(1)
         else:
             self.setOpacity(0.5)
         self._active = active
 
-    def reset(self):
+    def reset(self) -> None:
         self.bet_item.content = 0
         self.name_item.content = ""
         self.hh_position = None
@@ -125,10 +125,10 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         self.action_widget_item.setVisible(False)
         self.addToGroup(self.action_widget_item)
 
-    def hide_actions_widget(self):
+    def hide_actions_widget(self) -> None:
         self.action_widget_item.setVisible(False)
 
-    def animate_stack_to_bet(self, amount, street_bet_amount=0, target=None):
+    def animate_stack_to_bet(self, amount, street_bet_amount=0, target=None) -> None:
         if target is None:
             target = self.bet_item
 
@@ -140,9 +140,11 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             scene=self.scene(),
             callbacks=[lambda: setattr(self.bet_item, "content", street_bet_amount)],
             target_font=True,
+            target_item_center=target is not self.bet_item,
+            font_kwargs={"color": "yellow"},
         )
 
-    def sync_with_hh(self, hand_history):
+    def sync_with_hh(self, hand_history) -> None:
         log.debug("Syncing player with HH")
         hh_player = hand_history.get_player_by_position(self.hh_position)
 
@@ -174,15 +176,15 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         else:
             self.show_cards()
 
-    def show_cards(self):
+    def show_cards(self) -> None:
         for i, c in enumerate(self.card_items):
             c.setVisible(i < self.n_cards)
 
-    def hide_cards(self):
+    def hide_cards(self) -> None:
         for c in self.card_items:
             c.setVisible(False)
 
-    def show_actions_widget(self, hand_history: hh.HandHistory):
+    def show_actions_widget(self, hand_history: hh.HandHistory) -> None:
         possible = hand_history.possible_action_types()
         if hh.ActionType.RAISE in possible:
             min_raise = hand_history.minimum_raise()
@@ -200,7 +202,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         self.action_widget.set_possible_actions(possible)
         self.action_widget_item.setVisible(True)
 
-    def add_action(self, action_type, amount=Decimal(0)):
+    def add_action(self, action_type, amount=Decimal(0)) -> None:
         hand_history: hh.HandHistory = self.scene().parent().hand_history
         hh_player = hand_history.get_player_by_position(self.hh_position)
 
@@ -234,27 +236,23 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         self.scene().parent().update_buttons()
         self.scene().request_action(hand_history)
 
-    def contextMenuEvent(self, event: QtWidgets.QGraphicsSceneContextMenuEvent):
+    def contextMenuEvent(self, event: QtWidgets.QGraphicsSceneContextMenuEvent) -> None:
         if not self.active:
             return
         item = self._identify_item(event)
         if item is not self:
-            try:
+            with contextlib.suppress(RuntimeError, AttributeError):
                 item.contextMenuEvent(event)
-            except (RuntimeError, AttributeError):
-                pass
 
-    def wheelEvent(self, event: QtWidgets.QGraphicsSceneWheelEvent):
+    def wheelEvent(self, event: QtWidgets.QGraphicsSceneWheelEvent) -> None:
         if not self.active:
             return
         item = self._identify_item(event)
         if item is not self:
-            try:
+            with contextlib.suppress(RuntimeError, AttributeError):
                 item.wheelEvent(event)
-            except (RuntimeError, AttributeError):
-                pass
 
-    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         main_window = self.scene().parent()
         if main_window.state == main_window.State.INIT:
             if event.button() == QtCore.Qt.MiddleButton:
@@ -271,31 +269,25 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
         if self.active:
             item = self._identify_item(event)
             if item is not self:
-                try:
+                with contextlib.suppress(RuntimeError, AttributeError):
                     item.mousePressEvent(event)
-                except (RuntimeError, AttributeError):
-                    pass
 
-    def mouseReleaseEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mouseReleaseEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         item = self._identify_item(event)
         if item is not self:
-            try:
+            with contextlib.suppress(RuntimeError, AttributeError):
                 item.mouseReleaseEvent(event)
-            except (RuntimeError, AttributeError):
-                pass
 
-    def mouseMoveEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mouseMoveEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         item = self._identify_item(event)
         if item is not self:
-            try:
+            with contextlib.suppress(RuntimeError, AttributeError):
                 item.mouseMoveEvent(event)
-            except (RuntimeError, AttributeError):
-                pass
 
-    def keyPressEvent(self, event: QtGui.QKeyEvent):
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         self.action_widget_item.keyPressEvent(event)
 
-    def keyReleaseEvent(self, event: QtGui.QKeyEvent):
+    def keyReleaseEvent(self, event: QtGui.QKeyEvent) -> None:
         self.action_widget_item.keyReleaseEvent(event)
 
     # def hoverEnterEvent(self, event: 'QGraphicsSceneHoverEvent'):

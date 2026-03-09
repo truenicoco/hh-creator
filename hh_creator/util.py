@@ -1,8 +1,10 @@
 import logging
 from decimal import Decimal, InvalidOperation
 from enum import Enum
+from functools import cache, total_ordering
+from pathlib import Path
 
-from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
+from PyQt5 import Qt, QtGui, QtWidgets, uic
 
 from .config import RESOURCE_PATH
 from .poker_enum import PokerEnum
@@ -27,6 +29,7 @@ class ActionType(PokerEnum):
     STRADDLE = ("straddle",)
 
 
+@total_ordering
 class IncrementableEnum(Enum):
     def next(self):
         return self.__class__(self._value_ + 1)
@@ -34,38 +37,51 @@ class IncrementableEnum(Enum):
     def prev(self):
         return self.__class__(self._value_ - 1)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._name_
 
-    def __gt__(self, other):
-        return self._value_ > other._value_
+    def __lt__(self, other):
+        return self._value_ < other._value_
+
+    def __eq__(self, other):
+        return self._value_ == other._value_
 
     def __sub__(self, other):
         return self._value_ - other._value_
+
+    def __hash__(self) -> int:
+        return self._value_
 
 
 class Image:
     IMG_PATH = RESOURCE_PATH / "img"
 
     @staticmethod
-    def get(filename, parent=None):
+    def get(
+        filename: str, force_png: bool = False
+    ) -> Qt.QGraphicsSvgItem | Qt.QGraphicsPixmapItem:
         path = Image.IMG_PATH / f"{filename}"
-        if path.with_suffix(".svg").exists():
+        if path.with_suffix(".svg").exists() and not force_png:
             log.debug(f"Loading {path}")
-            item = Qt.QGraphicsSvgItem(str(path.with_suffix(".svg")), parent)
+            item = Qt.QGraphicsSvgItem(str(path.with_suffix(".svg")), parent=None)
             return item
         elif path.with_suffix(".png").exists():
             log.debug(f"Loading {path}")
-            img = QtGui.QPixmap(str(path.with_suffix(".png")), parent)
-            return Qt.QGraphicsPixmapItem(img)
+            img = Image._get_pixmap(path)
+            return Qt.QGraphicsPixmapItem(img, parent=None)
         else:
-            raise FileNotFoundError
+            raise FileNotFoundError(path)
+
+    @staticmethod
+    @cache
+    def _get_pixmap(path: Path) -> QtGui.QPixmap:
+        return QtGui.QPixmap(str(path.with_suffix(".png")), None)
 
 
 class AutoUI:
     UI_PATH = RESOURCE_PATH / "ui"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._load_ui()
         self.widgets = {}
         i = 0
@@ -77,20 +93,16 @@ class AutoUI:
                 i += 1
             self.widgets[key] = obj
 
-    def _load_ui(self):
+    def _load_ui(self) -> None:
         uic.loadUi(self.UI_PATH / f"{type(self).__name__}.ui", self)
 
 
 class AmountValidatorWithBounds(QtGui.QDoubleValidator):
     # Forbid "," that Decimal() does not like.
-    LOCALE = QtCore.QLocale()
-    log.debug(f"Locale is {LOCALE}")
-    LOCALE.setNumberOptions(QtCore.QLocale.RejectGroupSeparator)
 
-    def __init__(self, minimum=None, maximum=None, *a, **kw):
+    def __init__(self, minimum=None, maximum=None, *a, **kw) -> None:
         super().__init__(*a, **kw)
-        self.setNotation(QtGui.QDoubleValidator.StandardNotation)
-        self.setLocale(self.LOCALE)
+
         if minimum is not None:
             self.setBottom(minimum)
         if maximum is not None:
@@ -98,7 +110,7 @@ class AmountValidatorWithBounds(QtGui.QDoubleValidator):
 
 
 class IntValidator(QtGui.QIntValidator):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setBottom(1)
 
@@ -126,10 +138,7 @@ def barycenter(x1, y1, x2, y2, w1=1, w2=2):
 
 
 def get_center(item, scene=False):
-    if scene:
-        pos = item.scenePos()
-    else:
-        pos = item.pos()
+    pos = item.scenePos() if scene else item.pos()
     x = pos.x()
     y = pos.y()
     rect = item.boundingRect().center()
@@ -150,7 +159,7 @@ def amount_format(x, n_decimals=3):
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]
 
 
-def init_sounds():
+def init_sounds() -> None:
     # we need to import it here or else tests cannot be played in CI:
     # ImportError: libpulse-mainloop-glib.so.0: cannot open shared object file: No such file or directory
     from PyQt5 import QtMultimedia
@@ -170,6 +179,7 @@ def init_sounds():
             ActionType.BB: _sounds["bet"],
             ActionType.ANTE: _sounds["bet"],
             ActionType.STRADDLE: _sounds["bet"],
+            # "win": _sounds["bet"],
             "street": _sounds["street"],
             "call_closing": _sounds["call_closing"],
         }

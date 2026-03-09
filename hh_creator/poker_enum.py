@@ -9,7 +9,7 @@ from collections.abc import Iterable
 
 
 class _PokerEnumMeta(enum.EnumMeta):
-    def __init__(self, clsname, bases, classdict):
+    def __init__(self, clsname, bases, classdict) -> None:
         # make sure we only have tuple values, not single values
         for member in self.__members__.values():
             values = member._value_
@@ -57,15 +57,15 @@ class _OrderableMixin:
 
 
 class PokerEnum(_OrderableMixin, enum.Enum, metaclass=_PokerEnumMeta):
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self._value_[0])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         val = self._value_[0]
         apostrophe = "'" if isinstance(val, str) else ""
         return f"{self.__class__.__name__}({apostrophe}{val}{apostrophe})"
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec) -> str:
         return str(self._value_[0])
 
     @property
@@ -75,7 +75,7 @@ class PokerEnum(_OrderableMixin, enum.Enum, metaclass=_PokerEnumMeta):
 
 
 class _ReprMixin:
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self}')"
 
 

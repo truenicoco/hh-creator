@@ -1,6 +1,5 @@
 import logging
 import time
-import typing
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -29,7 +28,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         italic=False,
         *a,
         **kwa,
-    ):
+    ) -> None:
         super().__init__(*a, **kwa)
         if self._fontstr is None:
             _load_font()
@@ -69,7 +68,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         return self._content
 
     @content.setter
-    def content(self, value):
+    def content(self, value) -> None:
         log.debug(f"Updating content of {self}")
         if self.hide_if_empty and not value:
             log.debug(f"Hiding {self} because empty value")
@@ -108,25 +107,24 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 
     def set_center(
         self,
-        pos: typing.Union[QtCore.QPointF, QtCore.QPoint, float],
+        pos: QtCore.QPointF | QtCore.QPoint | float,
         y: float = None,
         scene=False,
-    ):
+    ) -> None:
         if y is not None:
             pos = QtCore.QPointF(pos, y)
         rect = self.boundingRect()
-        if scene:
-            rpos = self.scenePos()
-        else:
-            rpos = self.pos()
+        rpos = self.scenePos() if scene else self.pos()
         offset = pos - rect.center() - rpos
         super().moveBy(offset.x(), offset.y())
 
 
 class StackItem(QtWidgets.QGraphicsItemGroup):
-    def __init__(self, *a, **kw):
+    def __init__(self, *a, **kw) -> None:
         super().__init__(*a, **kw)
-        self.stack_item = TextItem(hide_if_empty=False, content_is_number=True)
+        self.stack_item = TextItem(
+            hide_if_empty=False, content_is_number=True, color="yellow"
+        )
         self.action_item = TextItem()
         self.addToGroup(self.stack_item)
         self.addToGroup(self.action_item)
@@ -138,17 +136,17 @@ class StackItem(QtWidgets.QGraphicsItemGroup):
         return decimal_conversion(self.stack_item.content)
 
     @stack.setter
-    def stack(self, value):
+    def stack(self, value) -> None:
         self.timer.timeout.connect(lambda: setattr(self.stack_item, "content", value))
         if not self.timer.isActive():
             self.stack_item.content = value
 
     @property
-    def action(self):
+    def action(self) -> None:
         return
 
     @action.setter
-    def action(self, value):
+    def action(self, value) -> None:
         log.debug(f"Setting timer to briefly display action {value}")
         self.action_item.content = value
         self.stack_item.setVisible(False)
@@ -162,17 +160,17 @@ class StackItem(QtWidgets.QGraphicsItemGroup):
         )
         timer.start(config.config["animation"].getint("LAST_ACTION_DURATION"))
 
-    def set_center(self, *a):
+    def set_center(self, *a) -> None:
         self.stack_item.set_center(*a)
         self.action_item.set_center(*a)
 
-    def dialog(self):
+    def dialog(self) -> None:
         win = self.scene().parent()
         dialog = StackDialog(win, self.stack)
         if dialog.exec():
             self.stack = dialog.get_value()
 
-    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         log.debug("Click on stack")
         win = self.scene().parent()
         if win.state != win.State.INIT:
@@ -182,7 +180,7 @@ class StackItem(QtWidgets.QGraphicsItemGroup):
 
 
 class NameItem(TextItem):
-    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         log.debug(f"Click on {self}")
         win = self.scene().parent()
         # noinspection PyTypeChecker
@@ -191,7 +189,7 @@ class NameItem(TextItem):
             self.content = dialog.widgets["lineEdit"].text()
 
 
-def _load_font():
+def _load_font() -> None:
     _id = QtGui.QFontDatabase.addApplicationFont(str(RESOURCE_PATH / "Lato-Black.ttf"))
     _fontstr = QtGui.QFontDatabase.applicationFontFamilies(_id)
     try:

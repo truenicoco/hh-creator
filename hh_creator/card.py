@@ -1,9 +1,10 @@
+import contextlib
 import itertools
 import logging
 from dataclasses import dataclass
 from functools import total_ordering
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING
 
 from deuces import Card as DeucesCard
 from deuces import Evaluator
@@ -62,7 +63,7 @@ class Rank(PokerEnum):
 
 
 class CardLook(QtWidgets.QGraphicsItemGroup):
-    instances = []
+    instances: list["CardLook"] = []
 
     def __init__(
         self,
@@ -70,7 +71,7 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
         crop_bottom=False,
         *a,
         **kw,
-    ):
+    ) -> None:
         root = Path("cards_cut") if crop_bottom else Path("cards")
         super().__init__(*a, **kw)
         self.scale_factor = scale_factor
@@ -85,13 +86,16 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
             self.addToGroup(k)
             k.setVisible(False)
             k.setScale(scale_factor)
-        self.back = Image.get(root / "back-red")
-        self.back.setScale(scale_factor)
+        self.crop_bottom = crop_bottom
+        variant = ("back-" + config.config["look"]["card-back"]) or "back-red"
+        self.back = Image.get(root / variant)
+        self._crop_back_pixmap()
+        self._apply_back_scale_factor()
         self.scale_factor = scale_factor
         self.addToGroup(self.back)
         self.instances.append(self)
 
-    def _update_look(self):
+    def _update_look(self) -> None:
         if self._rank is None or self._suit is None:
             self.back.setVisible(True)
             return
@@ -99,38 +103,55 @@ class CardLook(QtWidgets.QGraphicsItemGroup):
         for (rank, suit), item in self.faces.items():
             item.setVisible((rank, suit) == (self._rank, self._suit))
 
+    def _apply_back_scale_factor(self) -> None:
+        mult = 1 if isinstance(self.back, Qt.QGraphicsSvgItem) else 0.5
+        self.back.setScale(self.scale_factor * mult)
+
+    def _crop_back_pixmap(self) -> None:
+        if isinstance(self.back, Qt.QGraphicsPixmapItem) and self.crop_bottom:
+            pixmap = self.back.pixmap()
+            cropped = pixmap.copy(0, 0, pixmap.width(), int(0.62 * pixmap.height()))
+            self.back.setPixmap(cropped)
+
     def boundingRect(self):
         rect_f = super().boundingRect()
         scaled = Qt.QRectF(*(x * self.scale_factor for x in rect_f.getCoords()))
         return scaled
 
     @classmethod
-    def change_back(cls, color):
+    def change_back(cls, color: str) -> None:
         config.config["look"]["card-back"] = color
         config.save_config()
         for i in cls.instances:
             visible = i.back.isVisible()
-            i.back.deleteLater()
             pos = i.back.scenePos()
-            i.back = Image.get(Path("cards") / f"back-{color}")
-            i.back.setScale(i.scale_factor)
+            scene = i.back.scene()
+            if scene is not None:
+                scene.removeItem(i.back)
+            if isinstance(i, Qt.QGraphicsSvgItem):
+                i.back.deleteLater()
+            i.back = Image.get(
+                Path("cards" + ("_cut" if i.crop_bottom else "")) / f"back-{color}"
+            )
+            i._crop_back_pixmap()
+            i._apply_back_scale_factor()
             i.back.setPos(pos)
             i.back.setVisible(visible)
             i.addToGroup(i.back)
 
-    def hide_face(self):
+    def hide_face(self) -> None:
         self.back.setVisible(True)
 
-    def discover(self):
+    def discover(self) -> None:
         if self._rank is not None and self._suit is not None:
             self.back.setVisible(False)
 
 
 class CardItem(CardLook):
-    def __init__(self, *a, **kw):
+    def __init__(self, *a, **kw) -> None:
         super().__init__(*a, **kw)
-        self._suit: Union[Suit, None] = None
-        self._rank: Union[Rank, None] = None
+        self._suit: Suit | None = None
+        self._rank: Rank | None = None
         self._update_look()
 
     @property
@@ -138,7 +159,7 @@ class CardItem(CardLook):
         return self._suit
 
     @suit.setter
-    def suit(self, suit):
+    def suit(self, suit) -> None:
         self._suit = suit
         self._update_look()
 
@@ -147,23 +168,21 @@ class CardItem(CardLook):
         return self._rank
 
     @rank.setter
-    def rank(self, rank):
+    def rank(self, rank) -> None:
         self._rank = rank
         self._update_look()
 
-    def wheelEvent(self, event: QtWidgets.QGraphicsSceneWheelEvent):
+    def wheelEvent(self, event: QtWidgets.QGraphicsSceneWheelEvent) -> None:
         log.debug("Wheel on card")
         mw = self.scene().parent()
         if mw.state != mw.State.ACTIONS:
             return
         if self.rank is not None:
             attr = "next" if event.delta() > 0 else "prev"
-            try:
+            with contextlib.suppress(ValueError):
                 self.rank = getattr(self.rank, attr)()
-            except ValueError:
-                pass
 
-    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
+    def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         mw = self.scene().parent()
         if mw.state != mw.State.ACTIONS:
             return
@@ -183,7 +202,7 @@ class CardItem(CardLook):
         else:
             self.suit = None
 
-    def contextMenuEvent(self, event: QtWidgets.QGraphicsSceneContextMenuEvent):
+    def contextMenuEvent(self, event: QtWidgets.QGraphicsSceneContextMenuEvent) -> None:
         mw = self.scene().parent()
         if mw.state != mw.State.ACTIONS:
             return
@@ -207,7 +226,7 @@ class CardItem(CardLook):
         menu.addActions(actions)
         menu.exec(event.screenPos())
 
-    def deuces_format(self):
+    def deuces_format(self) -> str | None:
         try:
             return f"{self.rank.one_letter_format()}{self.suit.one_letter_format()}"
         except AttributeError:
@@ -217,7 +236,7 @@ class CardItem(CardLook):
         return DeucesCard.new(self.deuces_format())
 
     @classmethod
-    def reset(cls):
+    def reset(cls) -> None:
         for c in cls.instances:
             c.rank = None
             c.suit = None
@@ -226,8 +245,8 @@ class CardItem(CardLook):
 @total_ordering
 @dataclass
 class Hand:
-    cards: List[CardItem]
-    board: List[CardItem]
+    cards: list[CardItem]
+    board: list[CardItem]
 
     def __gt__(self, other: "Hand"):
         return self.deuces_score() < other.deuces_score()
@@ -241,7 +260,7 @@ class Hand:
         )
 
 
-def get_winners(player_items: List["PlayerItemGroup"], board: List["CardItem"]):
+def get_winners(player_items: list["PlayerItemGroup"], board: list["CardItem"]):
     scores = []
     for player in player_items:
         if player.n_cards == 2:

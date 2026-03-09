@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, QLocale
 
 from . import config, hh
 from .util import AutoUI, amount_validator, decimal_conversion
@@ -38,7 +38,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
     N_CARDS = {"Texas": 2, "Omaha": 4}
 
-    def __init__(self, *a, **kw):
+    def __init__(self, *a, **kw) -> None:
         super().__init__(*a, **kw)
 
         self.ok_button = self.widgets[0]
@@ -61,14 +61,14 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         self.open_instead = False
         self.update_ok()
 
-    def _auto_decimals(self):
+    def _auto_decimals(self) -> None:
         sb = self.get_field_value("SB", Decimal())
         ante = self.get_field_value("Ante", Decimal())
         self._get_widget("Decimals").setText(
             str(max(-sb.as_tuple().exponent, -ante.as_tuple().exponent, 1))
         )
 
-    def _auto_sb(self):
+    def _auto_sb(self) -> None:
         self._get_widget("SB").setText(str(self.get_field_value("BB") / 2))
 
     def _get_widget(self, field_name):
@@ -103,25 +103,25 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         return self.N_CARDS[self.get_field_value("Variant")]
 
     @pyqtSlot(str)
-    def on_lineEditSB_textEdited(self, value):
+    def on_lineEditSB_textEdited(self, value) -> None:
         if not self.widgets["checkBoxDecimals"].isChecked():
             self._auto_decimals()
         self.update_ok()
 
     @pyqtSlot(bool)
-    def on_checkBoxSB_toggled(self, checked):
+    def on_checkBoxSB_toggled(self, checked) -> None:
         if not checked:
             self._auto_sb()
         self.update_ok()
 
     @pyqtSlot(bool)
-    def on_checkBoxDecimals_toggled(self, checked):
+    def on_checkBoxDecimals_toggled(self, checked) -> None:
         if not checked:
             self._auto_decimals()
         self.update_ok()
 
     @pyqtSlot(str)
-    def on_lineEditBB_textEdited(self, value):
+    def on_lineEditBB_textEdited(self, value) -> None:
         if not self.widgets["checkBoxSB"].isChecked():
             self._auto_sb()
         if not self.widgets["checkBoxDecimals"].isChecked():
@@ -129,42 +129,42 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         self.update_ok()
 
     @pyqtSlot(str)
-    def on_lineEditStraddle_textEdited(self, value):
+    def on_lineEditStraddle_textEdited(self, value) -> None:
         self.update_ok()
 
     @pyqtSlot(bool)
-    def on_checkBoxStraddle_toggled(self, checked):
+    def on_checkBoxStraddle_toggled(self, checked) -> None:
         if not checked:
             self._get_widget("Straddle").setText("0")
         self.update_ok()
 
     @pyqtSlot(str)
-    def on_lineEditAnte_textEdited(self, value):
+    def on_lineEditAnte_textEdited(self, value) -> None:
         self._auto_decimals()
         self.update_ok()
 
     @pyqtSlot(bool)
-    def on_checkBoxAnte_toggled(self, checked):
+    def on_checkBoxAnte_toggled(self, checked) -> None:
         if not checked:
             self._get_widget("Ante").setText("0")
         self.update_ok()
 
     @pyqtSlot(bool)
-    def on_checkBoxBBAnte_toggled(self, checked):
+    def on_checkBoxBBAnte_toggled(self, checked) -> None:
         if not checked:
             self._get_widget("BBAnte").setText("0")
         self.update_ok()
 
     @pyqtSlot(str)
-    def on_lineEditPlayers_textEdited(self, value):
+    def on_lineEditPlayers_textEdited(self, value) -> None:
         self.update_ok()
 
     @pyqtSlot()
-    def on_pushButtonOpen_clicked(self):
+    def on_pushButtonOpen_clicked(self) -> None:
         self.open_instead = True
         self.close()
 
-    def update_ok(self):
+    def update_ok(self) -> None:
         sb = self.get_field_value("SB", default=0)
         bb = self.get_field_value("BB", default=0)
         straddle = self.get_field_value("Straddle", default=0)
@@ -175,12 +175,12 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
         stack_ok = stack > 0
         sb_ok = 0 <= sb <= bb
-        bb_ok = 0 < bb
+        bb_ok = bb > 0
         straddle_ok = (
             not self._get_checkbox("Straddle").isChecked()
             or 0 < straddle <= players - 2
         )
-        ante_ok = not self._get_checkbox("Ante").isChecked() or 0 < ante
+        ante_ok = not self._get_checkbox("Ante").isChecked() or ante > 0
         players_ok = 2 <= players <= 10
         decimals_ok = decimals >= 0
 
@@ -190,7 +190,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
 
 class NameDialog(QtWidgets.QDialog, AutoUI):
-    def __init__(self, parent, content):
+    def __init__(self, parent, content) -> None:
         super().__init__(parent=parent)
 
         line_edit = self.widgets["lineEdit"]
@@ -199,15 +199,17 @@ class NameDialog(QtWidgets.QDialog, AutoUI):
         self.show()
 
     @pyqtSlot(str)
-    def on_lineEdit_textEdited(self, text):
+    def on_lineEdit_textEdited(self, text) -> None:
         self.findChild(QtWidgets.QPushButton).setEnabled(bool(text))
 
 
 class StackDialog(QtWidgets.QDialog, AutoUI):
-    def __init__(self, parent, value):
+    def __init__(self, parent, value: Decimal) -> None:
         super().__init__(parent)
         self.line_edit: QtWidgets.QLineEdit = self.widgets["lineEdit"]
-        self.line_edit.setText(str(value))
+        self.line_edit.setText(
+            QLocale().toString(float(value), "f", abs(value.as_tuple().exponent))
+        )
         self.line_edit.setValidator(amount_validator)
         self.line_edit.selectAll()
         self.show()
@@ -217,14 +219,14 @@ class StackDialog(QtWidgets.QDialog, AutoUI):
 
 
 class ActionWidget(QtWidgets.QWidget, AutoUI):
-    def __init__(self, player_item: "PlayerItemGroup", parent):
+    def __init__(self, player_item: "PlayerItemGroup", parent) -> None:
         super().__init__(parent)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.slider: QtWidgets.QSlider = self.widgets["horizontalSlider"]
         self.slider_values = []
         self.player_item = player_item
 
-    def set_min_max_step(self, min_, max_, step):
+    def set_min_max_step(self, min_, max_, step) -> None:
         values = [min_]
         while values[-1] < max_:
             values.append(values[-1] + step)
@@ -238,7 +240,7 @@ class ActionWidget(QtWidgets.QWidget, AutoUI):
         self.slider_values = values
         self.widgets["lineEdit"].setText(str(min_))
 
-    def set_possible_actions(self, action_types):
+    def set_possible_actions(self, action_types) -> None:
         self.widgets["call"].setEnabled(hh.ActionType.CALL in action_types)
         self.widgets["check"].setEnabled(hh.ActionType.CHECK in action_types)
         bet = hh.ActionType.BET in action_types or hh.ActionType.RAISE in action_types
@@ -250,7 +252,7 @@ class ActionWidget(QtWidgets.QWidget, AutoUI):
         return decimal_conversion(self.widgets["lineEdit"].text())
 
     @pyqtSlot(int)
-    def on_horizontalSlider_valueChanged(self, index):
+    def on_horizontalSlider_valueChanged(self, index) -> None:
         try:
             linevalue = float(self.widgets["lineEdit"].text())
         except ValueError:
@@ -269,7 +271,7 @@ class ActionWidget(QtWidgets.QWidget, AutoUI):
         self.widgets["bet"].setEnabled(True)
 
     @pyqtSlot(str)
-    def on_lineEdit_textEdited(self, value):
+    def on_lineEdit_textEdited(self, value) -> None:
         try:
             value = float(value)
         except ValueError:
@@ -293,19 +295,19 @@ class ActionWidget(QtWidgets.QWidget, AutoUI):
             self.widgets["bet"].setEnabled(False)
 
     @pyqtSlot()
-    def on_bet_clicked(self):
+    def on_bet_clicked(self) -> None:
         self.player_item.add_action(hh.ActionType.BET, self.amount())
 
     @pyqtSlot()
-    def on_fold_clicked(self):
+    def on_fold_clicked(self) -> None:
         self.player_item.add_action(hh.ActionType.FOLD)
 
     @pyqtSlot()
-    def on_check_clicked(self):
+    def on_check_clicked(self) -> None:
         self.player_item.add_action(hh.ActionType.CHECK)
 
     @pyqtSlot()
-    def on_call_clicked(self):
+    def on_call_clicked(self) -> None:
         self.player_item.add_action(hh.ActionType.CALL)
 
 
