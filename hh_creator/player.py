@@ -225,11 +225,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             adjust = True
 
         if adjust:
-            new_amount = (
-                amount
-                - hand_history.current_player_amount_to_call()
-                - hand_history.current_player_street_bet()
-            )
+            new_amount = amount - hand_history.current_player_amount_to_call()
             log.debug(f"Requested bet {amount}, transforming it to raise {new_amount}")
             amount = new_amount
         hand_history.add_action(action_type, amount)

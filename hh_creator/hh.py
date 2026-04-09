@@ -374,16 +374,21 @@ class HandHistory:
             added_to_pot = self.current_player_amount_to_call()
             amount = added_to_pot
         elif action_type == ActionType.RAISE:
-            if amount < self.minimum_raise():
-                raise InvalidAmount("Raise is too small")
-            added_to_pot = amount + self.current_player_amount_to_call()
+            to_call = self.current_player_amount_to_call()
+            current_player_stack = self.current_player.stack
+            is_all_in = to_call + amount == current_player_stack
+            if not is_all_in and amount < self.minimum_raise():
+                raise InvalidAmount(
+                    f"Raise is too small: {amount} < {self.minimum_raise()}"
+                )
+            added_to_pot = amount + to_call
         elif action_type in BLINDS + [ActionType.ANTE]:
             added_to_pot = amount
         else:
             added_to_pot = Decimal(0)
 
         if added_to_pot > self.current_player.stack:
-            raise InvalidAmount
+            raise InvalidAmount(f"{added_to_pot} > {self.current_player.stack}")
 
         log.info(
             f"Action #{len(self.actions) + 1} ({self.current_street}): "
