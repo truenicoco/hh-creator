@@ -199,7 +199,7 @@ class PlayerItemGroup(QtWidgets.QGraphicsItemGroup):
             min_bet = hand_history.largest_blind
         max_bet = self.stack_item.stack + hand_history.current_player_street_bet()
         self.action_widget.set_min_max_step(min_bet, max_bet, hand_history.small_blind)
-        self.action_widget.set_possible_actions(possible)
+        self.action_widget.set_possible_actions(possible, hand_history)
         self.action_widget_item.setVisible(True)
 
     def add_action(self, action_type, amount=Decimal(0)) -> None:
