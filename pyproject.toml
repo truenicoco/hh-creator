@@ -39,5 +39,8 @@ build-backend = "setuptools.build_meta"
 [tool.pytest]
 log_level = "DEBUG"
 
+[tool.uv]
+exclude-newer = "7 days"
+
 # [tool.ruff.lint]
 # extend-select = ["ANN", "C4", "I", "SIM", "TRY", "UP"]
