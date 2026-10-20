@@ -22,9 +22,9 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         currency_is_after=True,
         hide_if_empty=True,
         content_is_number=False,
-        color=config.config["text"].get("global_font_color"),
-        point_size=config.config["text"].getint("global_font_size"),
-        weight=config.config["text"].getint("global_font_weight"),
+        color=config.config["text"].get("global_font_color"),  # noqa
+        point_size=config.config["text"].getint("global_font_size"),  # noqa
+        weight=config.config["text"].getint("global_font_weight"),  # noqa
         italic=False,
         *a,
         **kwa,

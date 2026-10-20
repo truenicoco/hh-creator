@@ -2,6 +2,7 @@ import json
 import logging
 from functools import partial
 from pathlib import Path
+from typing import ClassVar
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
@@ -30,7 +31,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         WAIT_FOR_TURN = 11
         WAIT_FOR_RIVER = 12
 
-    STATUS_MESSAGES = {
+    STATUS_MESSAGES: ClassVar = {
         State.LAUNCH: "",
         State.INIT: "Clic gauche: choisir bouton, "
         "clic droit: modifier stack, "
