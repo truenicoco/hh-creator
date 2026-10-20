@@ -118,9 +118,9 @@ class TableScene(QtWidgets.QGraphicsScene):
         items.extend(p.stack_item.stack_item for p in self.player_items)
         items.extend(p.bet_item for p in self.player_items)
         for i in items:
-            setattr(i, "content", getattr(i, "content"))
-            setattr(i, "currency", self._currency)
-            setattr(i, "currency_is_after", self._currency_is_after)
+            i.content = i.content
+            i.currency = self._currency
+            i.currency_is_after = self._currency_is_after
 
     def _get_highlight_effect(self) -> None:
         highlight_effect = QtWidgets.QGraphicsDropShadowEffect()
@@ -136,8 +136,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         for p in self.active_players():
             if p.hh_position == position:
                 return p
-        else:
-            raise ValueError(f"{position} not found in {self.player_items}")
+        raise ValueError(f"{position} not found in {self.player_items}")
 
     def _create_background(self) -> None:
         table_item = Image.get(Path("table") / config.config["look"].get("table"))
@@ -259,7 +258,6 @@ class TableScene(QtWidgets.QGraphicsScene):
     def mouseDoubleClickEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent) -> None:
         # TODO: replace this with full screen
         print(event.scenePos())
-        pass
 
     @property
     def currency(self):
@@ -503,7 +501,7 @@ class TableScene(QtWidgets.QGraphicsScene):
             lambda: setattr(
                 player_item.stack_item,
                 "stack",
-                total + getattr(player_item.stack_item, "stack"),
+                total + player_item.stack_item.stack,
             )
         )
 
