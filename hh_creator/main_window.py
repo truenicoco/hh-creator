@@ -5,11 +5,8 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtWidgets import (
-    QDialog,
-    QMessageBox,
-    QVBoxLayout,
-)
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QDialog, QMessageBox, QShortcut, QVBoxLayout
 
 from . import config
 from .animations import Animations
@@ -77,6 +74,16 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
         self.update_background()
         if show_new_hh_dialog:
             self.on_actionNew_triggered()
+
+        QShortcut(QKeySequence(Qt.Key.Key_Right), self).activated.connect(
+            self.on_pushButtonNext_clicked
+        )
+        QShortcut(QKeySequence(Qt.Key.Key_Left), self).activated.connect(
+            self.on_pushButtonBack_clicked
+        )
+        QShortcut(QKeySequence(Qt.Key.Key_Home), self).activated.connect(
+            self.on_pushButtonStart_clicked
+        )
 
     def _make_table_scene(self) -> None:
         table_scene = TableScene(self)
