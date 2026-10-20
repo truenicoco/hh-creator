@@ -105,8 +105,8 @@ class Action:
     street: Street | None = None
     player: Union["Player", None] = None
     action_type: ActionType | None = None
-    amount: Decimal = Decimal("0")
-    added_to_pot: Decimal = Decimal("0")
+    amount: Decimal = Decimal(0)
+    added_to_pot: Decimal = Decimal(0)
 
 
 @dataclass
@@ -114,7 +114,7 @@ class Player:
     position: Position
     hand_history: "HandHistory"
     actions: list[Action] = field(default_factory=list)
-    stack: Decimal = Decimal("100")
+    stack: Decimal = Decimal(100)
 
     def __post_init__(self):
         self.initial_stack = self.stack
@@ -203,7 +203,7 @@ class HandHistory:
 
         self.current_street = Street.ANTE
         self.current_player: Player | None = None
-        self.total_pot = Decimal("0")
+        self.total_pot = Decimal(0)
 
         self._blinds_posted = False
 
@@ -553,7 +553,7 @@ class HandHistory:
         return json.loads(self.to_json(), object_hook=json_hook)
 
     @classmethod
-    def from_json(cls, string):
+    def from_json(cls, string) -> "HandHistory":
         obj = json.loads(string, object_hook=json_hook)
         return cls.from_dict(obj)
 
