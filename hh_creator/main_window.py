@@ -476,7 +476,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             config.config["behavior"].get("default_path"),
             "Fichiers HH (*.hh)",
         )
-        filename, selected_filter = result
+        filename, _selected_filter = result
         if filename:
             self.current_filename = filename
             self.findChild(QtWidgets.QAction, "actionSave").setEnabled(True)
@@ -492,7 +492,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
             config.config["behavior"].get("default_path"),
             "Fichiers HH (*.hh)",
         )
-        filename, selected_filter = result
+        filename, _selected_filter = result
         if filename:
             self.current_filename = filename
             self.findChild(QtWidgets.QAction, "actionSave").setEnabled(True)

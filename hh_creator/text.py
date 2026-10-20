@@ -108,7 +108,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
     def set_center(
         self,
         pos: QtCore.QPointF | QtCore.QPoint | float,
-        y: float = None,
+        y: float | None = None,
         scene=False,
     ) -> None:
         if y is not None:
