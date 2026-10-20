@@ -149,11 +149,20 @@ def amount_format(x, n_decimals=3):
     if not isinstance(x, Decimal):
         x = Decimal(str(x))  # Convert to Decimal to avoid precision issues
 
+    if x >= 1_000_000:
+        suffix = "M"
+        x /= 1_000_000
+    elif x >= 1_000:
+        suffix = "k"
+        x /= 1_000
+    else:
+        suffix = ""
+
     x = round(x, n_decimals)
 
     # Normalize the number by removing trailing zeroes.
     # "f" prevents scientific notation.
-    return format(x.normalize(), ",f").replace(",", " ")
+    return format(x.normalize(), ",f").replace(",", " ") + suffix
 
 
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]
