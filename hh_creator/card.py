@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from functools import total_ordering
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from deuces import Card as DeucesCard
 from deuces import Evaluator
@@ -63,11 +63,11 @@ class Rank(PokerEnum):
 
 
 class CardLook(QtWidgets.QGraphicsItemGroup):
-    instances: list["CardLook"] = []
+    instances: ClassVar[list["CardLook"]] = []
 
     def __init__(
         self,
-        scale_factor=config.config["look"].getfloat("player_card_scale"),
+        scale_factor=config.config["look"].getfloat("player_card_scale"),  # noqa
         crop_bottom=False,
         *a,
         **kw,

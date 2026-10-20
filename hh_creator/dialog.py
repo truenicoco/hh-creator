@@ -2,6 +2,7 @@ import logging
 import typing
 from dataclasses import dataclass
 from decimal import Decimal
+from typing import ClassVar
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QLocale, pyqtSlot
@@ -22,7 +23,7 @@ class Field:
 
 
 class NewHandDialog(QtWidgets.QDialog, AutoUI):
-    FIELDS = {
+    FIELDS: ClassVar = {
         "SB": Field(Decimal, True),
         "BB": Field(Decimal, False),
         "Straddle": Field(int, True),
@@ -36,7 +37,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
         "Decimals": Field(int, True),
     }
 
-    N_CARDS = {"Texas": 2, "Omaha": 4}
+    N_CARDS: ClassVar = {"Texas": 2, "Omaha": 4}
 
     def __init__(self, *a, **kw) -> None:
         super().__init__(*a, **kw)
@@ -95,7 +96,7 @@ class NewHandDialog(QtWidgets.QDialog, AutoUI):
 
         try:
             return field.type(text)
-        except Exception:
+        except Exception:  # noqa
             log.warning(f"Conversion error from {text} for {field.type}")
             return default
 

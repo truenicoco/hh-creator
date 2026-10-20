@@ -1,4 +1,5 @@
 import logging
+from typing import ClassVar
 
 from PyQt5 import QtCore
 
@@ -7,7 +8,7 @@ from .util import get_center
 
 
 class Animations:
-    animations = []
+    animations: ClassVar = []
 
     @classmethod
     def add_callback(cls, callback) -> None:

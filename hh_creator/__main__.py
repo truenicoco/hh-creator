@@ -47,7 +47,7 @@ def main() -> None:
             else None
         ),
     )
-    logging.info("Starting HH Creator version %s", __version__)
+    logging.info("Starting HH Creator version %s", __version__)  # noqa
 
     init_sounds()
     window = MainWindow(show_new_hh_dialog=args.load is None)
