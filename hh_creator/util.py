@@ -119,9 +119,9 @@ def decimal_conversion(text):
     if isinstance(text, Decimal):
         return text
     try:
-        return Decimal(text.replace(",", "."))
+        return Decimal(text.replace(",", ".").replace(" ", "").replace("\u202f", ""))
     except InvalidOperation:
-        log.warning(f"Error converting {text} to decimal, returning 0")
+        log.warning(f"Error converting {text!r} to decimal, returning 0")
         return Decimal(0)
 
 
@@ -153,7 +153,7 @@ def amount_format(x, n_decimals=3):
 
     # Normalize the number by removing trailing zeroes.
     # "f" prevents scientific notation.
-    return format(x.normalize(), "f")
+    return format(x.normalize(), ",f").replace(",", " ")
 
 
 BLINDS = [ActionType.SB, ActionType.BB, ActionType.STRADDLE]
