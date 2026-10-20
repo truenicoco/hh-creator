@@ -45,7 +45,6 @@ class Animations:
         content=None,
         callbacks=(),
         target_font=False,
-        target_item_center: bool = False,
         font_kwargs: dict | None = None,
     ) -> None:
         # print(f"Animating {source} to {target}")
@@ -75,11 +74,10 @@ class Animations:
         else:
             target_pos = target.get_pos_if_content(content)
 
-        if target_item_center:
-            rect = target.boundingRect()
-            target_pos = QtCore.QPointF(
-                target_pos.x() + rect.width() / 2, target_pos.y()
-            )
+        rect = target.boundingRect()
+        offset_x = rect.width() / 2
+        offset_x -= item_to_animate.boundingRect().width() / 2
+        target_pos = QtCore.QPointF(target_pos.x() + offset_x, target_pos.y())
 
         animation = QtCore.QPropertyAnimation(scene)
         animation.setTargetObject(item_to_animate)

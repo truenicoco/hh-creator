@@ -461,7 +461,6 @@ class TableScene(QtWidgets.QGraphicsScene):
                         "BETS_TO_POT_ANIMATION_DURATION"
                     ),
                     scene=self,
-                    target_item_center=True,
                 )
 
             pot_item.content = side_pot.amount
