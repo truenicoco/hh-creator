@@ -4,7 +4,7 @@ from enum import Enum
 from functools import cache, total_ordering
 from pathlib import Path
 
-from PyQt5 import Qt, QtGui, QtWidgets, uic
+from PyQt5 import Qt, QtCore, QtGui, QtWidgets, uic
 
 from .config import RESOURCE_PATH
 from .poker_enum import PokerEnum
@@ -164,10 +164,12 @@ def init_sounds() -> None:
     # ImportError: libpulse-mainloop-glib.so.0: cannot open shared object file: No such file or directory
     from PyQt5 import QtMultimedia
 
-    _sounds = {
-        f.stem: QtMultimedia.QSound(str(f))
-        for f in (RESOURCE_PATH / "sounds").glob("*.wav")
-    }
+    _sounds = {}
+    for f in (RESOURCE_PATH / "sounds").glob("*.wav"):
+        sound = QtMultimedia.QSoundEffect()
+        sound.setSource(QtCore.QUrl.fromLocalFile(str(f)))
+        sound.setVolume(0.25 if f.stem in {"bet", "check"} else 0.34)
+        _sounds[f.stem] = sound
 
     sounds.update(
         {
