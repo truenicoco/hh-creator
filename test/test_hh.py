@@ -24,7 +24,7 @@ def test_hu_player_order(file_name: str) -> None:
 
 @pytest.mark.parametrize("file_name", ["fold_flop.hh", "fold_preflop.hh"])
 def test_remaining_action(file_name: str) -> None:
-    hh = HandHistory.from_json((Path(__file__).parent / "fold_flop.hh").read_text())
+    hh = HandHistory.from_json((Path(__file__).parent / file_name).read_text())
     assert hh.n_pseudo_actions() == 0
 
 
@@ -52,3 +52,9 @@ def test_allin_ante():
     )
     adjusted = min_bet - hh.current_player_amount_to_call()
     hh.add_action(ActionType.RAISE, adjusted)
+
+
+def test_allin_preflop():
+    hh = HandHistory.from_json((Path(__file__).parent / "allin_preflop.hh").read_text())
+    assert hh.went_to_showdown
+    assert hh.n_pseudo_actions() == 4
