@@ -160,6 +160,7 @@ class TableScene(QtWidgets.QGraphicsScene):
         self.addItem(background)
         self.resize_table()
         self.addItem(table_item)
+        self.setBackgroundBrush(_edge_color(background.pixmap().toImage()))
 
     @staticmethod
     def _create_table_shadow() -> QtWidgets.QGraphicsDropShadowEffect:
@@ -762,6 +763,29 @@ class TableScene(QtWidgets.QGraphicsScene):
     def show_all_active_players_cards(self) -> None:
         for p in self.active_players():
             p.show_cards()
+
+
+def _edge_color(image: QtGui.QImage) -> QtGui.QColor:
+    w, h = image.width(), image.height()
+    step_x = max(1, w // 50)
+    step_y = max(1, h // 50)
+
+    points = (
+        [(x, 0) for x in range(0, w, step_x)]
+        + [(x, h - 1) for x in range(0, w, step_x)]
+        + [(0, y) for y in range(0, h, step_y)]
+        + [(w - 1, y) for y in range(0, h, step_y)]
+    )
+
+    r = g = b = 0
+    for x, y in points:
+        c = image.pixelColor(x, y)
+        r += c.red()
+        g += c.green()
+        b += c.blue()
+
+    n = len(points)
+    return QtGui.QColor(r // n, g // n, b // n)
 
 
 log = logging.getLogger(__name__)
