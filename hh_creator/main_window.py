@@ -190,9 +190,7 @@ class MainWindow(QtWidgets.QMainWindow, AutoUI):
 
             self.scene.n_seats = dialog.get_field_value("Players")
 
-            self.scene.set_all_stacks(
-                dialog.get_field_value("Stack") * dialog.get_field_value("BB")
-            )
+            self.scene.set_all_stacks(dialog.get_field_value("Stack"))
 
             self.scene.set_n_cards(dialog.get_n_cards())
             self.scene.currency = dialog.get_field_value("Currency")

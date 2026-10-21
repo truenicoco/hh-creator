@@ -4,6 +4,8 @@ from pathlib import Path
 
 from PyQt5 import Qt, QtGui, QtWidgets
 
+from hh_creator.hh import Player
+
 from . import config, hh
 from .animations import Animations
 from .card import CardItem, Rank, Suit, get_winners
@@ -393,7 +395,7 @@ class TableScene(QtWidgets.QGraphicsScene):
     def active_seats_idx(self):
         return [i for i, p in enumerate(self.player_items) if p.active]
 
-    def get_active_players_after_button(self):
+    def get_active_players_after_button(self) -> list[Player]:
         players = list(self.active_players())
         for i, p in enumerate(players):
             if p.has_button:
